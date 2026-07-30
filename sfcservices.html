@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SFC Services - Crypto Payment</title>
+  <style>
+    /* Dark Metallic Theme inspired by SFC Logo */
+    :root {
+      --bg-dark: #1e2023;
+      --card-bg: #2a2c31;
+      --card-border: #3d4047;
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --accent: #505662;
+      --accent-hover: #636b7a;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .logo-container {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 16px;
+      border-radius: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo-container img {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    p.subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    main {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .widget-container {
+      width: 100%;
+      height: 620px;
+      position: relative;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 12px;
+      }
+      
+      .widget-container {
+        height: 580px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <!-- Replace 'SFCTM_Services_Logo_Refreshed.png' with your relative image path if needed -->
+      <img src="SFCTM_Services_Logo_Refreshed.png" alt="SFC Services Logo" />
+    </div>
+    <h1>SFC Services</h1>
+    <p class="subtitle">Secure Crypto Payment Gateway</p>
+  </header>
+
+  <main>
+    <div class="widget-container">
+      <iframe
+        src="https://buy.onramper.com/?defaultCrypto=sol&onlyCryptoNetworks=solana&networkWallets=solana:XEpoMmBFTLzujJuzZ9XmgM5NCgBou2F5N1prosvuuRU"
+        title="Onramper Payment Widget"
+        allow="accelerometer; autoplay; camera; gyroscope; payment"
+      ></iframe>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; SFC Services. Powered by Onramper & Solana.</p>
+  </footer>
+
+</body>
+</html>
