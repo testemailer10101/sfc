@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SFC Services - Crypto Payment</title>
+  <title>SFC™ Services - Crypto Payment</title>
   <style>
     /* Dark Metallic Theme inspired by SFC Logo */
     :root {
-      --bg-dark: #1e2023;
-      --card-bg: #2a2c31;
-      --card-border: #3d4047;
-      --text-main: #e2e8f0;
+      --bg-dark: #121316;
+      --card-bg: #1c1e22;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f1f5f9;
       --text-muted: #94a3b8;
-      --accent: #3b82f6;
-      --accent-hover: #2563eb;
-      --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      --accent-glow: #14f195; /* Solana Green Accent */
+      --accent-purple: #9945ff; /* Solana Purple Accent */
     }
 
     * {
@@ -26,6 +25,9 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(153, 69, 255, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 50% 100%, rgba(20, 241, 149, 0.08) 0%, transparent 50%);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -37,30 +39,31 @@
 
     header {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
 
     .logo-container {
-      width: 72px;
-      height: 72px;
-      margin: 0 auto 16px;
-      border-radius: 16px;
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 18px;
+      border-radius: 20px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5),
+                  0 0 0 1px rgba(255, 255, 255, 0.05);
     }
 
     .logo-container img {
-      width: 52px;
-      height: 52px;
+      width: 56px;
+      height: 56px;
       object-fit: contain;
     }
 
     h1 {
-      font-size: 1.75rem;
+      font-size: 1.85rem;
       font-weight: 700;
       letter-spacing: -0.02em;
       color: var(--text-main);
@@ -74,66 +77,173 @@
 
     main {
       width: 100%;
-      max-width: 480px;
+      max-width: 420px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      padding: 32px 24px;
       display: flex;
       flex-direction: column;
-    }
-
-    .widget-container {
-      width: 100%;
-      height: 620px;
-      position: relative;
-    }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
-    }
-
-    .fallback-container {
-      padding: 20px;
+      align-items: center;
       text-align: center;
+      position: relative;
+      backdrop-filter: blur(12px);
     }
 
-    .btn-pay {
-      display: inline-block;
-      width: 100%;
-      padding: 14px 20px;
-      background-color: #27292e;
-      color: #ffffff;
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      font-size: 1rem;
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(20, 241, 149, 0.1);
+      color: var(--accent-glow);
+      border: 1px solid rgba(20, 241, 149, 0.2);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.82rem;
       font-weight: 600;
-      text-decoration: none;
-      transition: background-color 0.2s ease, transform 0.1s ease;
+      margin-bottom: 20px;
+      letter-spacing: 0.03em;
     }
 
-    .btn-pay:hover {
-      background-color: #35383f;
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background-color: var(--accent-glow);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    .pay-details {
+      margin-bottom: 28px;
+    }
+
+    .pay-details h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .pay-details p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Animated Glow Payment Button */
+    .btn-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .pay-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 18px 24px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-decoration: none;
+      background: linear-gradient(135deg, #2a2d34 0%, #181a1f 100%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      z-index: 1;
+    }
+
+    /* Ambient Glow Behind Button */
+    .btn-container::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 18px;
+      background: linear-gradient(90deg, var(--accent-purple), var(--accent-glow), var(--accent-purple));
+      background-size: 200% 100%;
+      z-index: 0;
+      opacity: 0.3;
+      filter: blur(10px);
+      transition: opacity 0.3s ease;
+      animation: gradientShift 4s linear infinite;
+    }
+
+    /* Shimmer Effect overlay */
+    .pay-btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        60deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.15) 50%,
+        transparent 70%
+      );
+      transform: rotate(30deg);
+      animation: shimmer 3.5s infinite;
+    }
+
+    .pay-btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+    }
+
+    .btn-container:hover::before {
+      opacity: 0.8;
+    }
+
+    .pay-btn:active {
+      transform: translateY(1px);
+    }
+
+    .pay-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+      transition: transform 0.3s ease;
+    }
+
+    .pay-btn:hover svg {
+      transform: translateX(4px);
+    }
+
+    /* Keyframe Animations */
+    @keyframes shimmer {
+      0% {
+        transform: translateX(-100%) rotate(30deg);
+      }
+      100% {
+        transform: translateX(100%) rotate(30deg);
+      }
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
     }
 
     footer {
-      margin-top: 24px;
+      margin-top: 28px;
       text-align: center;
       font-size: 0.8rem;
       color: var(--text-muted);
     }
 
-    @media (max-width: 520px) {
+    @media (max-width: 480px) {
       body {
-        padding: 12px;
+        padding: 16px;
       }
-      
-      .widget-container {
-        height: 580px;
+      main {
+        padding: 24px 18px;
       }
     }
   </style>
@@ -142,37 +252,39 @@
 
   <header>
     <div class="logo-container">
-      <img src="SFCTM_Services_Logo_Refreshed.png" alt="SFC Services Logo" />
+      <img src="SFCTM_Services_Logo_Refreshed.png" alt="SFC™ Services Logo" />
     </div>
-    <h1>SFC Services</h1>
-    <p class="subtitle">Secure Crypto Payment Gateway</p>
+    <h1>SFC™ Services</h1>
+    <p class="subtitle">Official Checkout Portal</p>
   </header>
 
   <main>
-    <div class="widget-container">
-      <!-- Changed domain from buy.onramper.com to widget.onramper.com -->
-      <iframe
-        src="https://widget.onramper.com/?defaultCrypto=sol&onlyCryptoNetworks=solana&networkWallets=solana:XEpoMmBFTLzujJuzZ9XmgM5NCgBou2F5N1prosvuuRU"
-        title="Onramper Payment Widget"
-        allow="accelerometer; autoplay; camera; gyroscope; payment"
-      ></iframe>
+    <div class="badge">
+      <span class="badge-dot"></span> Instant Solana Transfer
     </div>
-    
-    <!-- Direct link fallback if iframe policies or adblockers interfere -->
-    <div class="fallback-container">
+
+    <div class="pay-details">
+      <h2>Complete Your Purchase</h2>
+      <p>Click below to open our secure checkout via Onramper with pre-configured network parameters.</p>
+    </div>
+
+    <div class="btn-container">
       <a 
         href="https://buy.onramper.com/?defaultCrypto=sol&onlyCryptoNetworks=solana&networkWallets=solana:XEpoMmBFTLzujJuzZ9XmgM5NCgBou2F5N1prosvuuRU" 
         target="_blank" 
         rel="noopener noreferrer" 
-        class="btn-pay"
+        class="pay-btn"
       >
-        Open Payment Portal in New Tab
+        <span>Pay with Crypto</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </a>
     </div>
   </main>
 
   <footer>
-    <p>&copy; SFC Services. Powered by Onramper & Solana.</p>
+    <p>&copy; SFC™ Services. Powered by Onramper & Solana.</p>
   </footer>
 
 </body>
