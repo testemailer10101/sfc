@@ -8,10 +8,9 @@
     @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
 
     :root {
-      /* Colors directly sampled from the provided logo image */
+      /* Metallic gray tones sampled from logo */
       --logo-bg: #282a2e;
       --logo-dark: #121315;
-      --logo-shadow: #1b1c1e;
       --logo-mid: #3c3e43;
       --logo-gray: #4f5258;
       --logo-highlight: #5e626a;
@@ -33,7 +32,6 @@
     body {
       font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--logo-dark);
-      /* Page Background: Exclusively uses the dark gray & highlight gray tones from the logo */
       background-image: 
         radial-gradient(circle at 50% 0%, rgba(94, 98, 106, 0.25) 0%, transparent 60%),
         radial-gradient(circle at 15% 35%, rgba(60, 62, 67, 0.3) 0%, transparent 45%),
@@ -82,7 +80,6 @@
       color: var(--text-muted);
     }
 
-    /* Discord Connect Controls */
     .auth-container {
       margin-top: 16px;
       display: flex;
@@ -169,11 +166,11 @@
       border-color: rgba(255, 255, 255, 0.2);
     }
 
-    /* VIP Card Gradient: Updated to Logo Highlight metallic gradient */
+    /* VIP Card Gradient (Hidden by default until verified via Discord) */
     .bundle-card.vip {
       border-color: rgba(94, 98, 106, 0.4);
       background: linear-gradient(180deg, rgba(94, 98, 106, 0.2) 0%, var(--card-bg) 100%);
-      display: none; /* Hidden by default until verified via Discord */
+      display: none;
     }
 
     .bundle-header {
@@ -326,7 +323,6 @@
       font-size: 1.1rem;
     }
 
-    /* Server Mods Section */
     .mods-list {
       text-align: left;
       margin: 16px 0;
@@ -373,7 +369,6 @@
       margin-top: 10px;
     }
 
-    /* Button Surface: Metallic dark gray gradient sampled from logo body */
     .pay-btn {
       position: relative;
       display: flex;
@@ -387,7 +382,7 @@
       font-family: inherit;
       color: #ffffff;
       text-decoration: none;
-      background: linear-gradient(135deg, var(--logo-mid) 0%, var(--logo-shadow) 100%);
+      background: linear-gradient(135deg, var(--logo-mid) 0%, var(--logo-dark) 100%);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 14px;
       cursor: pointer;
@@ -405,13 +400,12 @@
       transform: translateY(0);
     }
 
-    /* Outer Glow Gradient: Strictly cycles through image tones (highlight gray, mid gray, shadow) */
     .pay-btn-container::before {
       content: '';
       position: absolute;
       inset: -2px;
       border-radius: 16px;
-      background: linear-gradient(90deg, var(--logo-highlight), var(--logo-mid), var(--logo-shadow), var(--logo-highlight));
+      background: linear-gradient(90deg, var(--logo-highlight), var(--logo-mid), var(--logo-dark), var(--logo-highlight));
       background-size: 200% 100%;
       z-index: 0;
       opacity: 0.7;
@@ -506,7 +500,7 @@
       <button class="btn-select">Select Bundle</button>
     </div>
 
-    <!-- Pro VIP Bundle (Initially hidden, revealed on verification) -->
+    <!-- Pro VIP Bundle (Revealed upon VIP Discord verification) -->
     <div class="bundle-card vip" id="vipBundleCard" onclick="openStandardModal('Pro Bundle [👑 VIP Edition]', 899)">
       <div>
         <div class="bundle-header">
@@ -571,7 +565,7 @@
       <button class="close-btn" onclick="closeModals()">&times;</button>
       <h2>Server Modifications</h2>
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap;">
-        Pick individual options (<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> 29/modification) or purchase the full bundle for <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> 110.
+        Pick individual options (<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" />29/modification) or purchase the full bundle for <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> 110.
       </p>
 
       <div class="mods-list">
@@ -623,7 +617,8 @@
     const ROBUX_TO_USD_RATE = 0.0125;
     const WALLET_ADDRESS = "XEpoMmBFTLzujJuzZ9XmgM5NCgBou2F5N1prosvuuRU";
     
-    // Discord Configuration
+    // Set this to your actual Vercel endpoint domain (e.g. https://your-project.vercel.app/api/verify-vip)
+    const VERCEL_API_URL = "https://your-vercel-project.vercel.app/api/verify-vip";
     const DISCORD_CLIENT_ID = "YOUR_DISCORD_CLIENT_ID";
     const REDIRECT_URI = window.location.origin + window.location.pathname;
 
@@ -691,7 +686,7 @@
       document.getElementById('modPayLink').href = buildOnramperUrl(usdAmount, 'usd');
     }
 
-    // --- Discord Integration Logic ---
+    // Discord OAuth2 Flow
     function loginWithDiscord() {
       const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify`;
       window.location.href = authUrl;
@@ -702,11 +697,10 @@
       const code = urlParams.get('code');
 
       if (code) {
-        // Clean URL after capturing code
         window.history.replaceState({}, document.title, window.location.pathname);
 
         try {
-          const response = await fetch('/api/verify-vip', {
+          const response = await fetch(VERCEL_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ code, redirectUri: REDIRECT_URI })
@@ -715,18 +709,18 @@
           const data = await response.json();
 
           if (data.success && data.isVip) {
-            // Display VIP bundle card
+            // Unhide VIP bundle card
             document.getElementById('vipBundleCard').style.display = 'flex';
             
-            // Update Auth Button UI
             document.getElementById('discordLoginBtn').style.display = 'none';
             document.getElementById('discordUserStatus').style.display = 'inline-flex';
             document.getElementById('discordUsername').innerText = data.username;
           } else {
-            alert('Verification failed: You must have the VIP role and an active open ticket.');
+            alert('Verification failed: You must have the VIP role and an active ticket channel.');
           }
         } catch (err) {
-          console.error('Failed to verify VIP status:', err);
+          console.error('API Verification Error:', err);
+          alert('Failed to connect to verification backend.');
         }
       }
     });
