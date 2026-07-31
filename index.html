@@ -104,19 +104,6 @@
       background: linear-gradient(180deg, #22201b 0%, #1c1e22 100%);
     }
 
-    .vip-badge {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      background: rgba(251, 191, 36, 0.15);
-      color: var(--gold);
-      border: 1px solid rgba(251, 191, 36, 0.3);
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 700;
-    }
-
     .bundle-header {
       display: flex;
       align-items: center;
@@ -136,16 +123,33 @@
       font-weight: 700;
     }
 
+    .price-row-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+      margin-bottom: 16px;
+    }
+
     .bundle-price {
       font-size: 1.5rem;
       font-weight: 700;
       color: var(--accent-glow);
-      margin-bottom: 16px;
-      margin-top: 4px;
     }
 
     .bundle-card.vip .bundle-price {
       color: var(--gold);
+    }
+
+    .vip-badge {
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--gold);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
     }
 
     .btn-select {
@@ -222,7 +226,7 @@
       text-align: left;
     }
 
-    .price-row {
+    .price-breakdown .price-row {
       display: flex;
       justify-content: space-between;
       margin-bottom: 8px;
@@ -230,7 +234,7 @@
       color: var(--text-muted);
     }
 
-    .price-row.total {
+    .price-breakdown .price-row.total {
       margin-bottom: 0;
       padding-top: 8px;
       border-top: 1px solid var(--card-border);
@@ -354,7 +358,9 @@
           <img src="Basic_Bundle.webp" alt="Basic Bundle Icon" class="bundle-icon" />
           <div class="bundle-title">Basic Bundle</div>
         </div>
-        <div class="bundle-price">99 Robux</div>
+        <div class="price-row-container">
+          <div class="bundle-price">99 Robux</div>
+        </div>
       </div>
       <button class="btn-select">Select Bundle</button>
     </div>
@@ -366,7 +372,9 @@
           <img src="Standard_Bundle.webp" alt="Standard Bundle Icon" class="bundle-icon" />
           <div class="bundle-title">Standard Bundle</div>
         </div>
-        <div class="bundle-price">499 Robux</div>
+        <div class="price-row-container">
+          <div class="bundle-price">499 Robux</div>
+        </div>
       </div>
       <button class="btn-select">Select Bundle</button>
     </div>
@@ -378,22 +386,26 @@
           <img src="Pro_Bundle.webp" alt="Pro Bundle Icon" class="bundle-icon" />
           <div class="bundle-title">Pro Bundle</div>
         </div>
-        <div class="bundle-price">999 Robux</div>
+        <div class="price-row-container">
+          <div class="bundle-price">999 Robux</div>
+        </div>
       </div>
       <button class="btn-select">Select Bundle</button>
     </div>
 
     <!-- Pro VIP Bundle -->
     <div class="bundle-card vip" onclick="openStandardModal('Pro Bundle [👑 VIP Edition]', 899)">
-      <span class="vip-badge">VIP Exclusive</span>
       <div>
         <div class="bundle-header">
           <img src="Pro_Bundle_VIP_Edition.webp" alt="VIP Bundle Icon" class="bundle-icon" />
           <div class="bundle-title">Pro Bundle [👑 VIP Edition]</div>
         </div>
-        <div class="bundle-price">899 Robux</div>
+        <div class="price-row-container">
+          <div class="bundle-price">899 Robux</div>
+          <span class="vip-badge">VIP Exclusive</span>
+        </div>
       </div>
-      <button class="btn-select">Select Bundle</button>
+      <button class="btn-select">Select VIP Bundle</button>
     </div>
 
     <!-- Server Modification Bundle -->
@@ -403,7 +415,9 @@
           <img src="Server_Modification_Bundle.webp" alt="Server Mods Icon" class="bundle-icon" />
           <div class="bundle-title">Server Modifications</div>
         </div>
-        <div class="bundle-price">Custom / 110 Robux</div>
+        <div class="price-row-container">
+          <div class="bundle-price">Custom / 110 Robux</div>
+        </div>
       </div>
       <button class="btn-select">Select Modifications</button>
     </div>
@@ -564,7 +578,7 @@
       });
 
       let robux = checkedCount * 29;
-      if (checkedCount === 5) robux = 110;
+      if (checkedCount === 4) robux = 110;
 
       updateModDisplay(robux);
     }
