@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SFC™ Services - Store & Checkout</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
+
     :root {
       --bg-dark: #121316;
       --card-bg: #1c1e22;
@@ -23,7 +25,7 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-dark);
       background-image: 
         radial-gradient(circle at 50% 0%, rgba(153, 69, 255, 0.12) 0%, transparent 50%),
@@ -115,17 +117,31 @@
       font-weight: 700;
     }
 
+    .bundle-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .bundle-icon {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
     .bundle-title {
       font-size: 1.25rem;
       font-weight: 700;
-      margin-bottom: 8px;
     }
 
     .bundle-price {
       font-size: 1.5rem;
-      font-weight: 800;
+      font-weight: 700;
       color: var(--accent-glow);
       margin-bottom: 16px;
+      margin-top: 4px;
     }
 
     .bundle-card.vip .bundle-price {
@@ -133,6 +149,7 @@
     }
 
     .btn-select {
+      font-family: inherit;
       width: 100%;
       padding: 12px;
       border-radius: 12px;
@@ -141,7 +158,11 @@
       color: #fff;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.2s, transform 0.15s ease;
+    }
+
+    .btn-select:active {
+      transform: scale(0.98);
     }
 
     .bundle-card:hover .btn-select {
@@ -268,6 +289,7 @@
       padding: 16px 20px;
       font-size: 1rem;
       font-weight: 700;
+      font-family: inherit;
       color: #ffffff;
       text-decoration: none;
       background: linear-gradient(135deg, #2a2d34 0%, #181a1f 100%);
@@ -276,6 +298,16 @@
       cursor: pointer;
       overflow: hidden;
       z-index: 1;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .pay-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(20, 241, 149, 0.25);
+    }
+
+    .pay-btn:active {
+      transform: translateY(0);
     }
 
     .pay-btn-container::before {
@@ -286,9 +318,9 @@
       background: linear-gradient(90deg, var(--accent-purple), var(--accent-glow), var(--accent-purple));
       background-size: 200% 100%;
       z-index: 0;
-      opacity: 0.4;
+      opacity: 0.6;
       filter: blur(8px);
-      animation: gradientShift 4s linear infinite;
+      animation: gradientShift 3s linear infinite;
     }
 
     @keyframes gradientShift {
@@ -311,14 +343,17 @@
       <img src="SFCTM_Services_Logo_Refreshed.png" alt="SFC™ Services Logo" />
     </div>
     <h1>SFC™ Services</h1>
-    <p class="subtitle">Select a bundle to configure your purchase</p>
+    <p class="subtitle">Select a Bundle to proceed with your purchase</p>
   </header>
 
   <div class="container">
     <!-- Basic Bundle -->
     <div class="bundle-card" onclick="openStandardModal('Basic Bundle', 99)">
       <div>
-        <div class="bundle-title">Basic Bundle</div>
+        <div class="bundle-header">
+          <img src="Basic_Bundle.png" alt="Basic Bundle Icon" class="bundle-icon" />
+          <div class="bundle-title">Basic Bundle</div>
+        </div>
         <div class="bundle-price">99 Robux</div>
       </div>
       <button class="btn-select">Select Bundle</button>
@@ -327,7 +362,10 @@
     <!-- Standard Bundle -->
     <div class="bundle-card" onclick="openStandardModal('Standard Bundle', 499)">
       <div>
-        <div class="bundle-title">Standard Bundle</div>
+        <div class="bundle-header">
+          <img src="Standard_Bundle.png" alt="Standard Bundle Icon" class="bundle-icon" />
+          <div class="bundle-title">Standard Bundle</div>
+        </div>
         <div class="bundle-price">499 Robux</div>
       </div>
       <button class="btn-select">Select Bundle</button>
@@ -336,7 +374,10 @@
     <!-- Pro Bundle -->
     <div class="bundle-card" onclick="openStandardModal('Pro Bundle', 999)">
       <div>
-        <div class="bundle-title">Pro Bundle</div>
+        <div class="bundle-header">
+          <img src="Pro_Bundle.png" alt="Pro Bundle Icon" class="bundle-icon" />
+          <div class="bundle-title">Pro Bundle</div>
+        </div>
         <div class="bundle-price">999 Robux</div>
       </div>
       <button class="btn-select">Select Bundle</button>
@@ -344,9 +385,12 @@
 
     <!-- Pro VIP Bundle -->
     <div class="bundle-card vip" onclick="openStandardModal('Pro Bundle [👑 VIP Edition]', 899)">
-      <span class="vip-badge">VIP OFFER</span>
+      <span class="vip-badge">VIP Exclusive</span>
       <div>
-        <div class="bundle-title">Pro Bundle [👑 VIP Edition]</div>
+        <div class="bundle-header">
+          <img src="Pro_Bundle_VIP_Edition.png" alt="VIP Bundle Icon" class="bundle-icon" />
+          <div class="bundle-title">Pro Bundle [👑 VIP Edition]</div>
+        </div>
         <div class="bundle-price">899 Robux</div>
       </div>
       <button class="btn-select">Select VIP Bundle</button>
@@ -355,7 +399,10 @@
     <!-- Server Modification Bundle -->
     <div class="bundle-card" onclick="openServerModModal()">
       <div>
-        <div class="bundle-title">Server Modifications</div>
+        <div class="bundle-header">
+          <img src="Server_Modification_Bundle.png" alt="Server Mods Icon" class="bundle-icon" />
+          <div class="bundle-title">Server Modifications</div>
+        </div>
         <div class="bundle-price">Custom / 110 Robux</div>
       </div>
       <button class="btn-select">Configure Modifications</button>
@@ -479,7 +526,6 @@
     }
 
     function buildOnramperUrl(fiatAmount, fiatCurrency = 'inr') {
-      // Uses the direct checkout parameters documented in Onramper's wiki schema
       const params = new URLSearchParams({
         skipTransactionScreen: 'true',
         txnType: 'buy',
