@@ -8,13 +8,18 @@
     @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
 
     :root {
-      --bg-dark: #121316;
+      /* Colors directly sampled from the provided logo image */
+      --logo-bg: #282a2e;
+      --logo-dark: #121315;
+      --logo-shadow: #1b1c1e;
+      --logo-mid: #3c3e43;
+      --logo-gray: #4f5258;
+      --logo-highlight: #5e626a;
+
       --card-bg: #1c1e22;
       --card-border: rgba(255, 255, 255, 0.08);
       --text-main: #f1f5f9;
       --text-muted: #94a3b8;
-      --accent-glow: #14f195;
-      --accent-purple: #9945ff;
       --gold: #fbbf24;
     }
 
@@ -26,13 +31,13 @@
 
     body {
       font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg-dark);
-      /* Item 1: Dynamic background radial gradients inspired by SFC logo colors */
+      background-color: var(--logo-dark);
+      /* Page Background: Exclusively uses the dark gray & highlight gray tones from the logo */
       background-image: 
-        radial-gradient(circle at 50% 0%, rgba(153, 69, 255, 0.18) 0%, transparent 60%),
-        radial-gradient(circle at 10% 30%, rgba(20, 241, 149, 0.12) 0%, transparent 40%),
-        radial-gradient(circle at 90% 70%, rgba(153, 69, 255, 0.12) 0%, transparent 40%),
-        radial-gradient(circle at 50% 100%, rgba(20, 241, 149, 0.15) 0%, transparent 50%);
+        radial-gradient(circle at 50% 0%, rgba(94, 98, 106, 0.25) 0%, transparent 60%),
+        radial-gradient(circle at 15% 35%, rgba(60, 62, 67, 0.3) 0%, transparent 45%),
+        radial-gradient(circle at 85% 65%, rgba(79, 82, 88, 0.2) 0%, transparent 45%),
+        radial-gradient(circle at 50% 100%, rgba(40, 42, 46, 0.8) 0%, transparent 55%);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -51,7 +56,7 @@
       height: 80px;
       margin: 0 auto 16px;
       border-radius: 20px;
-      background: var(--card-bg);
+      background: var(--logo-bg);
       border: 1px solid var(--card-border);
       display: flex;
       align-items: center;
@@ -102,9 +107,10 @@
       border-color: rgba(255, 255, 255, 0.2);
     }
 
+    /* VIP Card Gradient: Updated to Logo Highlight metallic gradient */
     .bundle-card.vip {
-      border-color: rgba(251, 191, 36, 0.4);
-      background: linear-gradient(180deg, #22201b 0%, #1c1e22 100%);
+      border-color: rgba(94, 98, 106, 0.4);
+      background: linear-gradient(180deg, rgba(94, 98, 106, 0.2) 0%, var(--card-bg) 100%);
     }
 
     .bundle-header {
@@ -140,7 +146,7 @@
       gap: 6px;
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--accent-glow);
+      color: var(--text-main);
     }
 
     .bundle-card.vip .bundle-price {
@@ -190,7 +196,7 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
@@ -231,7 +237,7 @@
     }
 
     .price-breakdown {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.25);
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 16px;
@@ -286,7 +292,7 @@
     }
 
     .mod-item input[type="checkbox"] {
-      accent-color: var(--accent-glow);
+      accent-color: var(--logo-highlight);
       width: 16px;
       height: 16px;
     }
@@ -304,6 +310,7 @@
       margin-top: 10px;
     }
 
+    /* Button Surface: Metallic dark gray gradient sampled from logo body */
     .pay-btn {
       position: relative;
       display: flex;
@@ -317,7 +324,7 @@
       font-family: inherit;
       color: #ffffff;
       text-decoration: none;
-      background: linear-gradient(135deg, #2a2d34 0%, #181a1f 100%);
+      background: linear-gradient(135deg, var(--logo-mid) 0%, var(--logo-shadow) 100%);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 14px;
       cursor: pointer;
@@ -328,24 +335,25 @@
 
     .pay-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(20, 241, 149, 0.25);
+      box-shadow: 0 6px 20px rgba(94, 98, 106, 0.35);
     }
 
     .pay-btn:active {
       transform: translateY(0);
     }
 
+    /* Outer Glow Gradient: Strictly cycles through image tones (highlight gray, mid gray, shadow) */
     .pay-btn-container::before {
       content: '';
       position: absolute;
       inset: -2px;
       border-radius: 16px;
-      background: linear-gradient(90deg, var(--accent-purple), var(--accent-glow), var(--accent-purple));
+      background: linear-gradient(90deg, var(--logo-highlight), var(--logo-mid), var(--logo-shadow), var(--logo-highlight));
       background-size: 200% 100%;
       z-index: 0;
-      opacity: 0.6;
+      opacity: 0.7;
       filter: blur(8px);
-      animation: gradientShift 3s linear infinite;
+      animation: gradientShift 3.5s linear infinite;
     }
 
     @keyframes gradientShift {
@@ -380,7 +388,6 @@
           <div class="bundle-title">Basic Bundle</div>
         </div>
         <div class="price-row-container">
-          <!-- Item 2: Robux icon followed by price -->
           <div class="bundle-price">
             <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 99
           </div>
@@ -397,7 +404,6 @@
           <div class="bundle-title">Standard Bundle</div>
         </div>
         <div class="price-row-container">
-          <!-- Item 2: Robux icon followed by price -->
           <div class="bundle-price">
             <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 499
           </div>
@@ -414,7 +420,6 @@
           <div class="bundle-title">Pro Bundle</div>
         </div>
         <div class="price-row-container">
-          <!-- Item 2: Robux icon followed by price -->
           <div class="bundle-price">
             <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 999
           </div>
@@ -431,7 +436,6 @@
           <div class="bundle-title">Pro Bundle [👑 VIP Edition]</div>
         </div>
         <div class="price-row-container">
-          <!-- Item 2: Robux icon followed by price -->
           <div class="bundle-price">
             <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 899
           </div>
@@ -449,7 +453,6 @@
           <div class="bundle-title">Server Modifications</div>
         </div>
         <div class="price-row-container">
-          <!-- Item 2: Custom / Robux Icon 110 -->
           <div class="bundle-price">
             Custom / <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 110
           </div>
@@ -470,7 +473,6 @@
           <span>Robux Cost:</span>
           <span id="modalRobux">0</span>
         </div>
-        <!-- Item 3: USD instead of INR -->
         <div class="price-row total">
           <span>Total (USD):</span>
           <span id="modalUSD">$0.00</span>
@@ -490,13 +492,11 @@
     <div class="modal-content">
       <button class="close-btn" onclick="closeModals()">&times;</button>
       <h2>Server Modifications</h2>
-      <!-- Item 6: Updated text with inline Robux icons -->
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap;">
-        Pick individual options (<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> 29/modification) or purchase the full bundle for <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> 110.
+        Pick individual options (<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" />29/modification) or purchase the full bundle for <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> 110.
       </p>
 
       <div class="mods-list">
-        <!-- Item 4: Mini bio under Swapping bots -->
         <div class="mod-item">
           <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Swapping bots</label>
           <div class="mod-bio">Setup included!</div>
@@ -504,7 +504,6 @@
         <div class="mod-item">
           <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Editing bot settings</label>
         </div>
-        <!-- Item 5: Mini bio under Editing permissions -->
         <div class="mod-item">
           <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Editing permissions</label>
           <div class="mod-bio">Applicable on categories, channels, & roles!</div>
@@ -519,7 +518,6 @@
           <span>Selected Price:</span>
           <span id="modRobux">0 Robux</span>
         </div>
-        <!-- Item 3: USD Total -->
         <div class="price-row total">
           <span>Total (USD):</span>
           <span id="modUSD">$0.00</span>
@@ -527,8 +525,8 @@
       </div>
 
       <div style="display: flex; gap: 10px; flex-direction: column;">
-        <button class="btn-select" style="background: rgba(20, 241, 149, 0.15); color: var(--accent-glow); border-color: rgba(20, 241, 149, 0.3); display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="selectAllMods()">
-          Buy Full Bundle (<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:18px;height:18px;" /> 110)
+        <button class="btn-select" style="background: rgba(94, 98, 106, 0.2); color: var(--text-main); border-color: rgba(94, 98, 106, 0.4); display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="selectAllMods()">
+          Buy full Bundle (<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:18px;height:18px;" /> 110)
         </button>
         <div class="pay-btn-container">
           <a id="modPayLink" href="#" target="_blank" rel="noopener noreferrer" class="pay-btn">
