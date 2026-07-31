@@ -27,9 +27,12 @@
     body {
       font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-dark);
+      /* Item 1: Dynamic background radial gradients inspired by SFC logo colors */
       background-image: 
-        radial-gradient(circle at 50% 0%, rgba(153, 69, 255, 0.12) 0%, transparent 50%),
-        radial-gradient(circle at 50% 100%, rgba(20, 241, 149, 0.08) 0%, transparent 50%);
+        radial-gradient(circle at 50% 0%, rgba(153, 69, 255, 0.18) 0%, transparent 60%),
+        radial-gradient(circle at 10% 30%, rgba(20, 241, 149, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 90% 70%, rgba(153, 69, 255, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 50% 100%, rgba(20, 241, 149, 0.15) 0%, transparent 50%);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -132,6 +135,9 @@
     }
 
     .bundle-price {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       font-size: 1.5rem;
       font-weight: 700;
       color: var(--accent-glow);
@@ -139,6 +145,13 @@
 
     .bundle-card.vip .bundle-price {
       color: var(--gold);
+    }
+
+    .robux-inline-icon {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      vertical-align: middle;
     }
 
     .vip-badge {
@@ -229,6 +242,7 @@
     .price-breakdown .price-row {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       margin-bottom: 8px;
       font-size: 0.9rem;
       color: var(--text-muted);
@@ -254,10 +268,9 @@
 
     .mod-item {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      flex-direction: column;
       background: rgba(255, 255, 255, 0.03);
-      padding: 10px 14px;
+      padding: 12px 14px;
       border-radius: 10px;
       border: 1px solid var(--card-border);
       font-size: 0.9rem;
@@ -269,12 +282,20 @@
       gap: 10px;
       cursor: pointer;
       width: 100%;
+      font-weight: 500;
     }
 
     .mod-item input[type="checkbox"] {
       accent-color: var(--accent-glow);
       width: 16px;
       height: 16px;
+    }
+
+    .mod-bio {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-left: 26px;
+      margin-top: 4px;
     }
 
     .pay-btn-container {
@@ -359,7 +380,10 @@
           <div class="bundle-title">Basic Bundle</div>
         </div>
         <div class="price-row-container">
-          <div class="bundle-price">99 Robux</div>
+          <!-- Item 2: Robux icon followed by price -->
+          <div class="bundle-price">
+            <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 99
+          </div>
         </div>
       </div>
       <button class="btn-select">Select Bundle</button>
@@ -373,7 +397,10 @@
           <div class="bundle-title">Standard Bundle</div>
         </div>
         <div class="price-row-container">
-          <div class="bundle-price">499 Robux</div>
+          <!-- Item 2: Robux icon followed by price -->
+          <div class="bundle-price">
+            <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 499
+          </div>
         </div>
       </div>
       <button class="btn-select">Select Bundle</button>
@@ -387,7 +414,10 @@
           <div class="bundle-title">Pro Bundle</div>
         </div>
         <div class="price-row-container">
-          <div class="bundle-price">999 Robux</div>
+          <!-- Item 2: Robux icon followed by price -->
+          <div class="bundle-price">
+            <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 999
+          </div>
         </div>
       </div>
       <button class="btn-select">Select Bundle</button>
@@ -401,7 +431,10 @@
           <div class="bundle-title">Pro Bundle [👑 VIP Edition]</div>
         </div>
         <div class="price-row-container">
-          <div class="bundle-price">899 Robux</div>
+          <!-- Item 2: Robux icon followed by price -->
+          <div class="bundle-price">
+            <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 899
+          </div>
           <span class="vip-badge">VIP Exclusive</span>
         </div>
       </div>
@@ -416,7 +449,10 @@
           <div class="bundle-title">Server Modifications</div>
         </div>
         <div class="price-row-container">
-          <div class="bundle-price">Custom / 110 Robux</div>
+          <!-- Item 2: Custom / Robux Icon 110 -->
+          <div class="bundle-price">
+            Custom / <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 110
+          </div>
         </div>
       </div>
       <button class="btn-select">Select Modifications</button>
@@ -434,13 +470,10 @@
           <span>Robux Cost:</span>
           <span id="modalRobux">0</span>
         </div>
-        <div class="price-row">
-          <span>USD Equivalent ($0.0125/R$):</span>
-          <span id="modalUSD">$0.00</span>
-        </div>
+        <!-- Item 3: USD instead of INR -->
         <div class="price-row total">
-          <span>Total (INR):</span>
-          <span id="modalINR">Calculating...</span>
+          <span>Total (USD):</span>
+          <span id="modalUSD">$0.00</span>
         </div>
       </div>
 
@@ -457,19 +490,24 @@
     <div class="modal-content">
       <button class="close-btn" onclick="closeModals()">&times;</button>
       <h2>Server Modifications</h2>
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
-        Pick individual options (29 Robux each) or buy the full bundle for 110 Robux.
+      <!-- Item 6: Updated text with inline Robux icons -->
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap;">
+        Pick individual options (<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> 29/modification) or purchase the full bundle for <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> 110.
       </p>
 
       <div class="mods-list">
+        <!-- Item 4: Mini bio under Swapping bots -->
         <div class="mod-item">
-          <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Swapping bots (Setup included!)</label>
+          <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Swapping bots</label>
+          <div class="mod-bio">Setup included!</div>
         </div>
         <div class="mod-item">
           <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Editing bot settings</label>
         </div>
+        <!-- Item 5: Mini bio under Editing permissions -->
         <div class="mod-item">
           <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Editing permissions</label>
+          <div class="mod-bio">Applicable on categories, channels, & roles!</div>
         </div>
         <div class="mod-item">
           <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Editing Server Profile</label>
@@ -481,15 +519,16 @@
           <span>Selected Price:</span>
           <span id="modRobux">0 Robux</span>
         </div>
+        <!-- Item 3: USD Total -->
         <div class="price-row total">
-          <span>Total (INR):</span>
-          <span id="modINR">₹0.00</span>
+          <span>Total (USD):</span>
+          <span id="modUSD">$0.00</span>
         </div>
       </div>
 
       <div style="display: flex; gap: 10px; flex-direction: column;">
-        <button class="btn-select" style="background: rgba(20, 241, 149, 0.15); color: var(--accent-glow); border-color: rgba(20, 241, 149, 0.3);" onclick="selectAllMods()">
-          Buy Full Bundle (110 Robux)
+        <button class="btn-select" style="background: rgba(20, 241, 149, 0.15); color: var(--accent-glow); border-color: rgba(20, 241, 149, 0.3); display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="selectAllMods()">
+          Buy Full Bundle (<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:18px;height:18px;" /> 110)
         </button>
         <div class="pay-btn-container">
           <a id="modPayLink" href="#" target="_blank" rel="noopener noreferrer" class="pay-btn">
@@ -507,36 +546,13 @@
   <script>
     const ROBUX_TO_USD_RATE = 0.0125;
     const WALLET_ADDRESS = "XEpoMmBFTLzujJuzZ9XmgM5NCgBou2F5N1prosvuuRU";
-    let usdToInrRate = 83.5;
-
-    async function fetchExchangeRate() {
-      const primaryUrl = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json';
-      const fallbackUrl = 'https://latest.currency-api.pages.dev/v1/currencies/usd.json';
-
-      try {
-        const response = await fetch(primaryUrl);
-        if (!response.ok) throw new Error('Primary API failed');
-        const data = await response.json();
-        usdToInrRate = data.usd.inr;
-      } catch (err) {
-        try {
-          const fallbackResponse = await fetch(fallbackUrl);
-          const fallbackData = await fallbackResponse.json();
-          usdToInrRate = fallbackData.usd.inr;
-        } catch (fallbackErr) {
-          console.error('All currency API endpoints failed. Using default fallback rate.', fallbackErr);
-        }
-      }
-    }
-
-    fetchExchangeRate();
 
     function closeModals() {
       document.getElementById('standardModal').classList.remove('active');
       document.getElementById('serverModModal').classList.remove('active');
     }
 
-    function buildOnramperUrl(fiatAmount, fiatCurrency = 'inr') {
+    function buildOnramperUrl(fiatAmount, fiatCurrency = 'usd') {
       const params = new URLSearchParams({
         skipTransactionScreen: 'true',
         txnType: 'buy',
@@ -552,14 +568,12 @@
 
     function openStandardModal(name, robux) {
       const usdAmount = (robux * ROBUX_TO_USD_RATE).toFixed(2);
-      const inrAmount = (usdAmount * usdToInrRate).toFixed(2);
 
       document.getElementById('modalTitle').innerText = name;
-      document.getElementById('modalRobux').innerText = `${robux} Robux`;
+      document.getElementById('modalRobux').innerHTML = `<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> ${robux}`;
       document.getElementById('modalUSD').innerText = `$${usdAmount}`;
-      document.getElementById('modalINR').innerText = `₹${inrAmount}`;
       
-      document.getElementById('payLink').href = buildOnramperUrl(inrAmount, 'inr');
+      document.getElementById('payLink').href = buildOnramperUrl(usdAmount, 'usd');
 
       document.getElementById('standardModal').classList.add('active');
     }
@@ -591,11 +605,10 @@
 
     function updateModDisplay(robux) {
       const usdAmount = (robux * ROBUX_TO_USD_RATE).toFixed(2);
-      const inrAmount = (usdAmount * usdToInrRate).toFixed(2);
 
-      document.getElementById('modRobux').innerText = `${robux} Robux`;
-      document.getElementById('modINR').innerText = `₹${inrAmount}`;
-      document.getElementById('modPayLink').href = buildOnramperUrl(inrAmount, 'inr');
+      document.getElementById('modRobux').innerHTML = `<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> ${robux}`;
+      document.getElementById('modUSD').innerText = `$${usdAmount}`;
+      document.getElementById('modPayLink').href = buildOnramperUrl(usdAmount, 'usd');
     }
   </script>
 </body>
