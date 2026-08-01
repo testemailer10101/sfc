@@ -346,6 +346,46 @@
       font-size: 1.1rem;
     }
 
+    .mods-list {
+      text-align: left;
+      margin: 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mod-item {
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      font-size: 0.9rem;
+    }
+
+    .mod-item label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: 500;
+    }
+
+    .mod-item input[type="checkbox"] {
+      accent-color: var(--logo-highlight);
+      width: 16px;
+      height: 16px;
+    }
+
+    .mod-bio {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-left: 26px;
+      margin-top: 4px;
+    }
+
     .pay-btn-container {
       position: relative;
       width: 100%;
@@ -392,6 +432,13 @@
       padding: 4px 8px;
       border-radius: 6px;
       cursor: pointer;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
     }
   </style>
 </head>
@@ -463,6 +510,20 @@
       </div>
       <button class="btn-select">Select Bundle</button>
     </div>
+
+    <!-- Server Modification Bundle -->
+    <div class="bundle-card" onclick="openServerModModal()">
+      <div class="bundle-header">
+        <img src="Server_Modification_Bundle.webp" alt="Server Mods Icon" class="bundle-icon" />
+        <div class="bundle-title">Server Modifications</div>
+      </div>
+      <div class="price-row-container">
+        <div class="bundle-price">
+          Custom / <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 110
+        </div>
+      </div>
+      <button class="btn-select">Select Modifications</button>
+    </div>
   </div>
 
   <!-- Standard Checkout Modal -->
@@ -474,7 +535,7 @@
       <!-- Promo Code Section -->
       <div class="promo-container">
         <input type="text" id="promoInput" class="input-field" placeholder="Enter Promo Code" />
-        <button class="btn-apply" onclick="applyPromoCode()">Apply</button>
+        <button class="btn-apply" onclick="applyPromoCode('standard')">Apply</button>
       </div>
       <div class="promo-message" id="promoMsg"></div>
 
@@ -499,6 +560,67 @@
     </div>
   </div>
 
+  <!-- Server Modification Modal -->
+  <div class="modal-overlay" id="serverModModal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModals()">&times;</button>
+      <h2>Server Modifications</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap;">
+        Pick individual options (<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" />29/modification) or purchase the full bundle for <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> 110.
+      </p>
+
+      <div class="mods-list">
+        <div class="mod-item">
+          <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Swapping bots</label>
+          <div class="mod-bio">Setup included!</div>
+        </div>
+        <div class="mod-item">
+          <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Editing bot settings</label>
+        </div>
+        <div class="mod-item">
+          <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Editing permissions</label>
+          <div class="mod-bio">Applicable on categories, channels, & roles!</div>
+        </div>
+        <div class="mod-item">
+          <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Editing Server Profile</label>
+        </div>
+      </div>
+
+      <!-- Promo Code Section -->
+      <div class="promo-container">
+        <input type="text" id="modPromoInput" class="input-field" placeholder="Enter Promo Code" />
+        <button class="btn-apply" onclick="applyPromoCode('mod')">Apply</button>
+      </div>
+      <div class="promo-message" id="modPromoMsg"></div>
+
+      <div class="price-breakdown">
+        <div class="price-row">
+          <span>Selected Price:</span>
+          <span id="modRobux">0 Robux</span>
+        </div>
+        <div class="price-row discount" id="modDiscountRow" style="display:none;">
+          <span>Discount Applied:</span>
+          <span id="modDiscount">-$0.00</span>
+        </div>
+        <div class="price-row total">
+          <span>Total (USD):</span>
+          <span id="modUSD">$0.00</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; flex-direction: column;">
+        <button class="btn-select" style="background: rgba(94, 98, 106, 0.2); color: var(--text-main); border-color: rgba(94, 98, 106, 0.4); display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="selectAllMods()">
+          Buy full Bundle (<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:18px;height:18px;" /> 110)
+        </button>
+        <div class="pay-btn-container">
+          <a id="modPayLink" href="#" target="_blank" rel="noopener noreferrer" class="pay-btn">
+            Proceed to Checkout
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Spencer Admin Modal -->
   <div class="modal-overlay" id="adminModal">
     <div class="modal-content" style="max-width: 600px;">
@@ -506,7 +628,6 @@
       <h2>⚙️ Code Manager</h2>
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Create, manage, and expire promo codes.</p>
 
-      <!-- Code Creation Form -->
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
         <input type="text" id="adminCode" class="input-field" placeholder="Code (e.g. SUMMER26)" />
         <select id="adminType" class="select-field">
@@ -542,19 +663,26 @@
     </div>
   </div>
 
+  <footer>
+    <p>&copy; SFC™ Services. Powered by Onramper & Solana.</p>
+  </footer>
+
   <script>
     const ROBUX_TO_USD_RATE = 0.0125;
     const WALLET_ADDRESS = "XEpoMmBFTLzujJuzZ9XmgM5NCgBou2F5N1prosvuuRU";
     const VERCEL_BACKEND = "https://sfcservices-website-backend.vercel.app";
-    const DISCORD_CLIENT_ID = "YOUR_DISCORD_CLIENT_ID";
+    const DISCORD_CLIENT_ID = "1532736222810734763";
     const SPENCER_ID = "1300042213765546025";
 
     let currentBaseRobux = 0;
     let currentDiscountUsd = 0;
+    let currentModBaseRobux = 0;
+    let currentModDiscountUsd = 0;
     let loggedInUserId = null;
 
     function closeModals() {
       document.getElementById('standardModal').classList.remove('active');
+      document.getElementById('serverModModal').classList.remove('active');
       document.getElementById('adminModal').classList.remove('active');
     }
 
@@ -585,6 +713,46 @@
       document.getElementById('standardModal').classList.add('active');
     }
 
+    function openServerModModal() {
+      currentModDiscountUsd = 0;
+      document.getElementById('modPromoInput').value = '';
+      document.getElementById('modPromoMsg').innerText = '';
+      document.getElementById('modDiscountRow').style.display = 'none';
+      calculateModTotal();
+      document.getElementById('serverModModal').classList.add('active');
+    }
+
+    function calculateModTotal() {
+      const checkboxes = document.querySelectorAll('.mod-check');
+      let checkedCount = 0;
+
+      checkboxes.forEach(cb => {
+        if (cb.checked) checkedCount++;
+      });
+
+      let robux = checkedCount * 29;
+      if (checkedCount === 4) robux = 110;
+
+      currentModBaseRobux = robux;
+      updateModDisplay();
+    }
+
+    function selectAllMods() {
+      const checkboxes = document.querySelectorAll('.mod-check');
+      checkboxes.forEach(cb => cb.checked = true);
+      currentModBaseRobux = 110;
+      updateModDisplay();
+    }
+
+    function updateModDisplay() {
+      const rawUsd = currentModBaseRobux * ROBUX_TO_USD_RATE;
+      const finalUsd = Math.max(0, rawUsd - currentModDiscountUsd).toFixed(2);
+
+      document.getElementById('modRobux').innerHTML = `<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> ${currentModBaseRobux}`;
+      document.getElementById('modUSD').innerText = `$${finalUsd}`;
+      document.getElementById('modPayLink').href = buildOnramperUrl(finalUsd);
+    }
+
     function updateCheckoutTotal() {
       const rawUsd = currentBaseRobux * ROBUX_TO_USD_RATE;
       const finalUsd = Math.max(0, rawUsd - currentDiscountUsd).toFixed(2);
@@ -594,9 +762,11 @@
     }
 
     // Code Redemption Logic
-    async function applyPromoCode() {
-      const code = document.getElementById('promoInput').value.trim();
-      const msgElem = document.getElementById('promoMsg');
+    async function applyPromoCode(type) {
+      const inputId = type === 'standard' ? 'promoInput' : 'modPromoInput';
+      const msgId = type === 'standard' ? 'promoMsg' : 'modPromoMsg';
+      const code = document.getElementById(inputId).value.trim();
+      const msgElem = document.getElementById(msgId);
 
       if (!code) return;
 
@@ -620,17 +790,28 @@
 
         if (data.reward) {
           const { rewardType, rewardValue } = data.reward;
-          const baseUsd = currentBaseRobux * ROBUX_TO_USD_RATE;
 
-          if (rewardType === 'discount_percent') {
-            currentDiscountUsd = baseUsd * (rewardValue / 100);
-          } else if (rewardType === 'discount_robux') {
-            currentDiscountUsd = rewardValue * ROBUX_TO_USD_RATE;
+          if (type === 'standard') {
+            const baseUsd = currentBaseRobux * ROBUX_TO_USD_RATE;
+            if (rewardType === 'discount_percent') {
+              currentDiscountUsd = baseUsd * (rewardValue / 100);
+            } else if (rewardType === 'discount_robux') {
+              currentDiscountUsd = rewardValue * ROBUX_TO_USD_RATE;
+            }
+            document.getElementById('modalDiscount').innerText = `-$${currentDiscountUsd.toFixed(2)}`;
+            document.getElementById('discountRow').style.display = 'flex';
+            updateCheckoutTotal();
+          } else {
+            const baseUsd = currentModBaseRobux * ROBUX_TO_USD_RATE;
+            if (rewardType === 'discount_percent') {
+              currentModDiscountUsd = baseUsd * (rewardValue / 100);
+            } else if (rewardType === 'discount_robux') {
+              currentModDiscountUsd = rewardValue * ROBUX_TO_USD_RATE;
+            }
+            document.getElementById('modDiscount').innerText = `-$${currentModDiscountUsd.toFixed(2)}`;
+            document.getElementById('modDiscountRow').style.display = 'flex';
+            updateModDisplay();
           }
-
-          document.getElementById('modalDiscount').innerText = `-$${currentDiscountUsd.toFixed(2)}`;
-          document.getElementById('discountRow').style.display = 'flex';
-          updateCheckoutTotal();
         }
       } catch (err) {
         msgElem.className = 'promo-message error';
@@ -733,7 +914,6 @@
               document.getElementById('vipBundleCard').style.display = 'flex';
             }
 
-            // Reveal Admin Panel Button if Spencer logs in
             if (data.userId === SPENCER_ID) {
               document.getElementById('adminPanelBtn').style.display = 'inline-block';
             }
