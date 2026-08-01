@@ -193,7 +193,6 @@
       cursor: pointer;
     }
 
-    /* Responsive Stretching Grid Container */
     .container {
       width: 100%;
       max-width: 900px;
@@ -296,7 +295,6 @@
       cursor: not-allowed;
     }
 
-    /* Modal Styling */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -378,6 +376,24 @@
     .promo-message.success { color: var(--success); }
     .promo-message.error { color: var(--danger); }
     .promo-message.warning { color: var(--gold); }
+
+    .commission-section {
+      background: rgba(88, 101, 242, 0.08);
+      border: 1px solid rgba(88, 101, 242, 0.25);
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 16px;
+      text-align: left;
+    }
+
+    .commission-section h4 {
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      color: #a5b4fc;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
     .price-breakdown {
       background: rgba(0, 0, 0, 0.25);
@@ -636,25 +652,26 @@
       </div>
       <button class="btn-select">Rent Ad Space</button>
     </div>
-
-    <!-- Custom Commission Card -->
-    <div class="bundle-card" onclick="openCommissionModal()">
-      <div class="bundle-header">
-        <span style="font-size: 1.5rem;">🛠️</span>
-        <div class="bundle-title">Pay Commission</div>
-      </div>
-      <p class="card-description">Checkout securely for your completed custom commission using your designated ticket ID.</p>
-      <button class="btn-select" style="background: rgba(88, 101, 242, 0.15); border-color: rgba(88, 101, 242, 0.3); color: #fff;">Pay Invoice</button>
-    </div>
   </div>
 
-  <!-- Standard Checkout Modal -->
+  <!-- Standard Checkout Modal (Handles standard purchases & integrated commission ticket selection) -->
   <div class="modal-overlay" id="standardModal">
     <div class="modal-content">
       <button class="close-btn" onclick="closeModals()">&times;</button>
       <h2 id="modalTitle">Bundle Details</h2>
 
-      <div class="promo-container">
+      <!-- Integrated Commission Selection Box -->
+      <div class="commission-section" id="commissionSection" style="display: none;">
+        <h4>🛠️ Active Commission Tickets</h4>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
+          You own active commission tickets. Choose whether to pay for a commission or proceed with this standard bundle:
+        </p>
+        <select id="commissionTicketSelect" class="select-field" onchange="handleCommissionSelectChange()">
+          <option value="none">-- Pay Standard Bundle Item --</option>
+        </select>
+      </div>
+
+      <div class="promo-container" id="promoContainer">
         <input type="text" id="promoInput" class="input-field" placeholder="Enter Promo Code" />
         <button class="btn-apply" onclick="applyPromoCode('standard')">Apply</button>
       </div>
@@ -662,7 +679,7 @@
 
       <div class="price-breakdown">
         <div class="price-row">
-          <span>Base Robux:</span>
+          <span>Robux Amount:</span>
           <span id="modalRobux">0</span>
         </div>
         <div class="price-row discount" id="discountRow" style="display:none;">
@@ -794,51 +811,6 @@
     </div>
   </div>
 
-  <!-- Commission Authentication Modal -->
-  <div class="modal-overlay" id="commissionModal">
-    <div class="modal-content">
-      <button class="close-btn" onclick="closeModals()">&times;</button>
-      <h2>Pay Custom Commission</h2>
-      
-      <div id="commissionAuthWarning" class="promo-message warning" style="margin-top: 10px; display: none; text-align: center;">
-        ⚠️ You must connect your Discord account first to pay a commission ticket.
-      </div>
-
-      <div id="commissionFormContainer" style="display: none;">
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; margin-bottom: 16px;">
-          Your Discord account will be verified against the members inside the ticket channel.
-        </p>
-        
-        <div style="text-align: left; margin-bottom: 16px;">
-          <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Ticket Channel Name or ID:</label>
-          <input type="text" id="commissionTicketId" class="input-field" placeholder="e.g. ticket-0123" />
-        </div>
-
-        <div style="text-align: left; margin-bottom: 16px;">
-          <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Agreed Robux Amount:</label>
-          <input type="number" id="commissionAmount" class="input-field" placeholder="e.g. 1500" oninput="calculateCommissionTotal()" />
-        </div>
-
-        <div class="promo-message" id="commissionStatusMsg" style="text-align: center;"></div>
-
-        <div class="price-breakdown">
-          <div class="price-row">
-            <span>Commission Robux:</span>
-            <span id="commissionRobuxDisplay"><img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> 0</span>
-          </div>
-          <div class="price-row total">
-            <span>Total (<span class="currency-label">USD</span>):</span>
-            <span id="commissionDisplayTotal">$0.00</span>
-          </div>
-        </div>
-
-        <div class="pay-btn-container">
-          <button id="verifyCommissionBtn" class="pay-btn" onclick="verifyAndPayCommission()">Verify Ticket Membership & Checkout</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Admin Modal -->
   <div class="modal-overlay" id="adminModal">
     <div class="modal-content" style="max-width: 600px;">
@@ -885,13 +857,14 @@
   </footer>
 
   <script>
-    // Ledger Base Rate in USD ($0.015 per Robux baseline)
     const ROBUX_TO_USD_RATE = 0.015;
     const WALLET_ADDRESS = "XEpoMmBFTLzujJuzZ9XmgM5NCgBou2F5N1prosvuuRU";
     const VERCEL_BACKEND = "https://sfcservices-website-backend.vercel.app";
     const DISCORD_CLIENT_ID = "1532736222810734763";
     const SPENCER_ID = "1300042213765546025";
 
+    let selectedBundleName = "";
+    let selectedBundleRobux = 0;
     let currentBaseRobux = 0;
     let currentDiscountUsd = 0;
     let currentModBaseRobux = 0;
@@ -899,8 +872,8 @@
     let currentBillboardBaseRobux = 10;
     let currentBillboardDiscountUsd = 0;
     let loggedInUserId = null;
+    let userCommissionTickets = [];
 
-    // Currency Switcher Logic
     let activeCurrency = 'USD';
     let exchangeRates = { USD: 1.0, GBP: 0.78, EUR: 0.92, CAD: 1.36 };
     const currencySymbols = { USD: '$', GBP: '£', EUR: '€', CAD: 'CA$' };
@@ -943,7 +916,6 @@
       updateCheckoutTotal();
       updateModDisplay();
       calculateBillboardTotal();
-      calculateCommissionTotal();
     }
 
     function formatCurrency(usdValue) {
@@ -957,7 +929,6 @@
       document.getElementById('standardModal').classList.remove('active');
       document.getElementById('serverModModal').classList.remove('active');
       document.getElementById('billboardModal').classList.remove('active');
-      document.getElementById('commissionModal').classList.remove('active');
       document.getElementById('adminModal').classList.remove('active');
     }
 
@@ -973,16 +944,76 @@
       return `https://buy.onramper.com/?${params.toString()}`;
     }
 
-    function openStandardModal(name, robux) {
+    async function fetchUserCommissionTickets() {
+      if (!loggedInUserId) return [];
+      try {
+        const res = await fetch(`${VERCEL_BACKEND}/api/user-tickets?userId=${encodeURIComponent(loggedInUserId)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.tickets)) {
+            return data.tickets;
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch user tickets:', err);
+      }
+      return [];
+    }
+
+    async function openStandardModal(name, robux) {
+      selectedBundleName = name;
+      selectedBundleRobux = robux;
       currentBaseRobux = robux;
       currentDiscountUsd = 0;
+
       document.getElementById('modalTitle').innerText = name;
-      document.getElementById('modalRobux').innerHTML = `<img src="Robux_Icon.webp" class="robux-inline-icon" style="width:16px;height:16px;" /> ${robux}`;
       document.getElementById('promoInput').value = '';
       document.getElementById('promoMsg').innerText = '';
       document.getElementById('discountRow').style.display = 'none';
+
+      // Read & display user commission tickets directly in checkout
+      const commSection = document.getElementById('commissionSection');
+      const ticketSelect = document.getElementById('commissionTicketSelect');
+      
+      if (loggedInUserId) {
+        userCommissionTickets = await fetchUserCommissionTickets();
+        if (userCommissionTickets.length > 0) {
+          ticketSelect.innerHTML = `<option value="none">-- Select standard item: ${name} (${robux} Robux) --</option>`;
+          userCommissionTickets.forEach(ticket => {
+            ticketSelect.innerHTML += `<option value="${ticket.ticketId}" data-amount="${ticket.amount}">Ticket: ${ticket.ticketId} (${ticket.amount} Robux)</option>`;
+          });
+          commSection.style.display = 'block';
+        } else {
+          commSection.style.display = 'none';
+        }
+      } else {
+        commSection.style.display = 'none';
+      }
+
       updateCheckoutTotal();
       document.getElementById('standardModal').classList.add('active');
+    }
+
+    function handleCommissionSelectChange() {
+      const select = document.getElementById('commissionTicketSelect');
+      const selectedOption = select.options[select.selectedIndex];
+      const val = select.value;
+
+      if (val === 'none') {
+        document.getElementById('modalTitle').innerText = selectedBundleName;
+        currentBaseRobux = selectedBundleRobux;
+        document.getElementById('promoContainer').style.display = 'flex';
+      } else {
+        const ticketAmount = parseFloat(selectedOption.getAttribute('data-amount')) || 0;
+        document.getElementById('modalTitle').innerText = `Commission: ${val}`;
+        currentBaseRobux = ticketAmount;
+        document.getElementById('promoContainer').style.display = 'none';
+        document.getElementById('promoMsg').innerText = '';
+        currentDiscountUsd = 0;
+        document.getElementById('discountRow').style.display = 'none';
+      }
+
+      updateCheckoutTotal();
     }
 
     function openServerModModal() {
@@ -1001,22 +1032,6 @@
       document.getElementById('billboardDiscountRow').style.display = 'none';
       calculateBillboardTotal();
       document.getElementById('billboardModal').classList.add('active');
-    }
-
-    function openCommissionModal() {
-      document.getElementById('commissionTicketId').value = '';
-      document.getElementById('commissionAmount').value = '';
-      document.getElementById('commissionStatusMsg').innerText = '';
-      calculateCommissionTotal();
-
-      if (!loggedInUserId) {
-        document.getElementById('commissionAuthWarning').style.display = 'block';
-        document.getElementById('commissionFormContainer').style.display = 'none';
-      } else {
-        document.getElementById('commissionAuthWarning').style.display = 'none';
-        document.getElementById('commissionFormContainer').style.display = 'block';
-      }
-      document.getElementById('commissionModal').classList.add('active');
     }
 
     function calculateModTotal() {
@@ -1049,64 +1064,6 @@
       document.getElementById('billboardPayLink').href = buildOnramperUrl(finalUsd);
     }
 
-    function calculateCommissionTotal() {
-      const amount = parseFloat(document.getElementById('commissionAmount').value) || 0;
-      const finalUsd = (amount * ROBUX_TO_USD_RATE).toFixed(2);
-      
-      document.getElementById('commissionRobuxDisplay').innerHTML = `<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> ${amount}`;
-      document.getElementById('commissionDisplayTotal').innerText = formatCurrency(parseFloat(finalUsd));
-    }
-
-    async function verifyAndPayCommission() {
-      const ticketId = document.getElementById('commissionTicketId').value.trim();
-      const amount = parseFloat(document.getElementById('commissionAmount').value);
-      const msgElem = document.getElementById('commissionStatusMsg');
-      const btn = document.getElementById('verifyCommissionBtn');
-
-      if (!ticketId || !amount || amount <= 0) {
-        msgElem.className = 'promo-message error';
-        msgElem.innerText = 'Please enter a valid Ticket ID and Robux Amount.';
-        return;
-      }
-
-      msgElem.className = 'promo-message warning';
-      msgElem.innerText = 'Verifying Discord Ticket Membership...';
-      btn.disabled = true;
-
-      try {
-        const res = await fetch(`${VERCEL_BACKEND}/api/verify-ticket`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: loggedInUserId,
-            ticketId: ticketId
-          })
-        });
-        
-        const data = await res.json();
-
-        if (!data.success) {
-          msgElem.className = 'promo-message error';
-          msgElem.innerText = data.message || 'Verification failed: You are not in this ticket channel.';
-          btn.disabled = false;
-          return;
-        }
-
-        // Verification successful, redirect to Onramper
-        msgElem.className = 'promo-message success';
-        msgElem.innerText = 'Verified! Redirecting to checkout...';
-        
-        const finalUsd = (amount * ROBUX_TO_USD_RATE).toFixed(2);
-        window.open(buildOnramperUrl(finalUsd), '_blank');
-        btn.disabled = false;
-
-      } catch (err) {
-        msgElem.className = 'promo-message error';
-        msgElem.innerText = 'Failed to connect to backend for verification.';
-        btn.disabled = false;
-      }
-    }
-
     function updateModDisplay() {
       const rawUsd = currentModBaseRobux * ROBUX_TO_USD_RATE;
       const finalUsd = Math.max(0, rawUsd - currentModDiscountUsd).toFixed(2);
@@ -1118,6 +1075,7 @@
     function updateCheckoutTotal() {
       const rawUsd = currentBaseRobux * ROBUX_TO_USD_RATE;
       const finalUsd = Math.max(0, rawUsd - currentDiscountUsd).toFixed(2);
+      document.getElementById('modalRobux').innerHTML = `<img src="Robux_Icon.webp" class="robux-inline-icon" style="width:16px;height:16px;" /> ${currentBaseRobux}`;
       document.getElementById('modalDisplayTotal').innerText = formatCurrency(parseFloat(finalUsd));
       document.getElementById('payLink').href = buildOnramperUrl(finalUsd);
     }
@@ -1256,6 +1214,7 @@
     function logout() {
       localStorage.removeItem('sfc_user_session');
       loggedInUserId = null;
+      userCommissionTickets = [];
       document.getElementById('discordLoginBtn').style.display = 'inline-flex';
       document.getElementById('discordUserStatus').style.display = 'none';
       document.getElementById('vipBadge').style.display = 'none';
