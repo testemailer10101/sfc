@@ -193,11 +193,12 @@
       cursor: pointer;
     }
 
+    /* Responsive Stretching Grid Container */
     .container {
       width: 100%;
       max-width: 900px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
       gap: 20px;
     }
 
@@ -211,6 +212,8 @@
       justify-content: space-between;
       transition: transform 0.2s ease, border-color 0.2s ease;
       cursor: pointer;
+      flex: 1 1 calc(33.333% - 20px);
+      min-width: 260px;
     }
 
     .bundle-card:hover {
