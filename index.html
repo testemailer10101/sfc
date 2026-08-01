@@ -901,10 +901,9 @@
     function buildOnramperUrl(fiatAmountUsd) {
       const params = new URLSearchParams({
         skipTransactionScreen: 'false',
-        txnType: 'buy',
-        txnAmount: fiatAmountUsd,
-        txnFiat: 'usd',
-        txnCrypto: 'sol',
+        defaultAmount: fiatAmountUsd,
+        defaultFiat: 'usd',
+        defaultCrypto: 'sol',
         onlyCryptoNetworks: 'solana',
         networkWallets: `solana:${WALLET_ADDRESS}`
       });
