@@ -8,7 +8,6 @@
     @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
 
     :root {
-      /* Metallic gray tones sampled from logo */
       --logo-bg: #282a2e;
       --logo-dark: #121315;
       --logo-mid: #3c3e43;
@@ -21,6 +20,8 @@
       --text-muted: #94a3b8;
       --gold: #fbbf24;
       --discord-blurple: #5865f2;
+      --success: #22c55e;
+      --danger: #ef4444;
     }
 
     * {
@@ -83,7 +84,9 @@
     .auth-container {
       margin-top: 16px;
       display: flex;
+      gap: 10px;
       justify-content: center;
+      align-items: center;
     }
 
     .btn-discord {
@@ -106,10 +109,6 @@
     .btn-discord:hover {
       background-color: #4752c4;
       transform: translateY(-2px);
-    }
-
-    .btn-discord:active {
-      transform: translateY(0);
     }
 
     .btn-discord svg {
@@ -140,6 +139,18 @@
       font-weight: 700;
     }
 
+    .btn-admin {
+      display: none;
+      background: var(--logo-mid);
+      color: #fff;
+      border: 1px solid var(--card-border);
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
     .container {
       width: 100%;
       max-width: 900px;
@@ -158,7 +169,6 @@
       justify-content: space-between;
       transition: transform 0.2s ease, border-color 0.2s ease;
       cursor: pointer;
-      position: relative;
     }
 
     .bundle-card:hover {
@@ -166,7 +176,6 @@
       border-color: rgba(255, 255, 255, 0.2);
     }
 
-    /* VIP Card Gradient (Hidden by default until verified via Discord) */
     .bundle-card.vip {
       border-color: rgba(94, 98, 106, 0.4);
       background: linear-gradient(180deg, rgba(94, 98, 106, 0.2) 0%, var(--card-bg) 100%);
@@ -184,7 +193,6 @@
       width: 32px;
       height: 32px;
       object-fit: contain;
-      flex-shrink: 0;
     }
 
     .bundle-title {
@@ -206,29 +214,12 @@
       gap: 6px;
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .bundle-card.vip .bundle-price {
-      color: var(--gold);
     }
 
     .robux-inline-icon {
       width: 22px;
       height: 22px;
       object-fit: contain;
-      vertical-align: middle;
-    }
-
-    .vip-badge {
-      background: rgba(251, 191, 36, 0.15);
-      color: var(--gold);
-      border: 1px solid rgba(251, 191, 36, 0.3);
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      white-space: nowrap;
     }
 
     .btn-select {
@@ -241,18 +232,9 @@
       color: #fff;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s, transform 0.15s ease;
     }
 
-    .btn-select:active {
-      transform: scale(0.98);
-    }
-
-    .bundle-card:hover .btn-select {
-      background: #35383f;
-    }
-
-    /* Modal Styling */
+    /* Modal Overlay */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -277,11 +259,10 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 24px;
-      max-width: 440px;
+      max-width: 480px;
       width: 100%;
       padding: 28px;
       text-align: center;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
       position: relative;
     }
 
@@ -296,22 +277,64 @@
       cursor: pointer;
     }
 
+    /* Promo Code Section inside Checkout Modal */
+    .promo-container {
+      display: flex;
+      gap: 8px;
+      margin: 16px 0 8px;
+    }
+
+    .input-field, .select-field {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--card-border);
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .btn-apply {
+      background: var(--logo-mid);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .promo-message {
+      font-size: 0.8rem;
+      text-align: left;
+      margin-bottom: 12px;
+    }
+
+    .promo-message.success { color: var(--success); }
+    .promo-message.error { color: var(--danger); }
+
     .price-breakdown {
       background: rgba(0, 0, 0, 0.25);
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 16px;
-      margin: 20px 0;
+      margin: 12px 0 20px;
       text-align: left;
     }
 
     .price-breakdown .price-row {
       display: flex;
       justify-content: space-between;
-      align-items: center;
       margin-bottom: 8px;
       font-size: 0.9rem;
       color: var(--text-muted);
+    }
+
+    .price-breakdown .price-row.discount {
+      color: var(--success);
     }
 
     .price-breakdown .price-row.total {
@@ -323,106 +346,52 @@
       font-size: 1.1rem;
     }
 
-    .mods-list {
-      text-align: left;
-      margin: 16px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .mod-item {
-      display: flex;
-      flex-direction: column;
-      background: rgba(255, 255, 255, 0.03);
-      padding: 12px 14px;
-      border-radius: 10px;
-      border: 1px solid var(--card-border);
-      font-size: 0.9rem;
-    }
-
-    .mod-item label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      width: 100%;
-      font-weight: 500;
-    }
-
-    .mod-item input[type="checkbox"] {
-      accent-color: var(--logo-highlight);
-      width: 16px;
-      height: 16px;
-    }
-
-    .mod-bio {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-left: 26px;
-      margin-top: 4px;
-    }
-
     .pay-btn-container {
       position: relative;
       width: 100%;
-      margin-top: 10px;
     }
 
     .pay-btn {
-      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
       width: 100%;
-      padding: 16px 20px;
+      padding: 14px;
       font-size: 1rem;
       font-weight: 700;
-      font-family: inherit;
       color: #ffffff;
       text-decoration: none;
       background: linear-gradient(135deg, var(--logo-mid) 0%, var(--logo-dark) 100%);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 14px;
       cursor: pointer;
-      overflow: hidden;
-      z-index: 1;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .pay-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(94, 98, 106, 0.35);
+    /* Admin Table Styling */
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 0.82rem;
+      text-align: left;
     }
 
-    .pay-btn:active {
-      transform: translateY(0);
+    .admin-table th, .admin-table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--card-border);
     }
 
-    .pay-btn-container::before {
-      content: '';
-      position: absolute;
-      inset: -2px;
-      border-radius: 16px;
-      background: linear-gradient(90deg, var(--logo-highlight), var(--logo-mid), var(--logo-dark), var(--logo-highlight));
-      background-size: 200% 100%;
-      z-index: 0;
-      opacity: 0.7;
-      filter: blur(8px);
-      animation: gradientShift 3.5s linear infinite;
-    }
-
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 200% 50%; }
-    }
-
-    footer {
-      margin-top: 40px;
-      text-align: center;
-      font-size: 0.8rem;
+    .admin-table th {
       color: var(--text-muted);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -430,120 +399,93 @@
 
   <header>
     <div class="logo-container">
-      <img src="SFCTM_Services_Logo_Refreshed.webp" alt="SFC™ Services Logo" />
+      <img src="SFCTM_Services_Logo_Refreshed.webp" alt="SFC™ Logo" />
     </div>
     <h1>SFC™ Services</h1>
     <p class="subtitle">Select a Bundle to proceed with your purchase</p>
 
-    <!-- Discord Authentication Trigger -->
     <div class="auth-container">
       <button class="btn-discord" id="discordLoginBtn" onclick="loginWithDiscord()">
-        <svg viewBox="0 0 127.14 96.36">
-          <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0, -3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a74.57,74.57,0,0,0,64.3,0c.87.68,1.76,1.36,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-18.88-72.15ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,45.92,53.87,53,48.81,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,45.92,96.1,53,91.05,65.69,84.69,65.69Z"/>
-        </svg>
+        <svg viewBox="0 0 127.14 96.36"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0,-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a74.57,74.57,0,0,0,64.3,0c.87.68,1.76,1.36,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-18.88-72.15ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,45.92,53.87,53,48.81,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,45.92,96.1,53,91.05,65.69,84.69,65.69Z"/></svg>
         Connect Discord for VIP Perks
       </button>
 
       <div class="user-status" id="discordUserStatus">
         <span>Logged in as <strong id="discordUsername"></strong></span>
-        <span class="status-badge">VIP Verified</span>
+        <span class="status-badge" id="vipBadge">VIP Verified</span>
       </div>
+
+      <button class="btn-admin" id="adminPanelBtn" onclick="openAdminModal()">⚙️ Code Manager</button>
     </div>
   </header>
 
   <div class="container">
-    <!-- Basic Bundle -->
     <div class="bundle-card" onclick="openStandardModal('Basic Bundle', 99)">
-      <div>
-        <div class="bundle-header">
-          <img src="Basic_Bundle.webp" alt="Basic Bundle Icon" class="bundle-icon" />
-          <div class="bundle-title">Basic Bundle</div>
-        </div>
-        <div class="price-row-container">
-          <div class="bundle-price">
-            <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 99
-          </div>
-        </div>
+      <div class="bundle-header">
+        <img src="Basic_Bundle.webp" class="bundle-icon" />
+        <div class="bundle-title">Basic Bundle</div>
+      </div>
+      <div class="price-row-container">
+        <div class="bundle-price"><img src="Robux_Icon.webp" class="robux-inline-icon" /> 99</div>
       </div>
       <button class="btn-select">Select Bundle</button>
     </div>
 
-    <!-- Standard Bundle -->
     <div class="bundle-card" onclick="openStandardModal('Standard Bundle', 499)">
-      <div>
-        <div class="bundle-header">
-          <img src="Standard_Bundle.webp" alt="Standard Bundle Icon" class="bundle-icon" />
-          <div class="bundle-title">Standard Bundle</div>
-        </div>
-        <div class="price-row-container">
-          <div class="bundle-price">
-            <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 499
-          </div>
-        </div>
+      <div class="bundle-header">
+        <img src="Standard_Bundle.webp" class="bundle-icon" />
+        <div class="bundle-title">Standard Bundle</div>
+      </div>
+      <div class="price-row-container">
+        <div class="bundle-price"><img src="Robux_Icon.webp" class="robux-inline-icon" /> 499</div>
       </div>
       <button class="btn-select">Select Bundle</button>
     </div>
 
-    <!-- Pro Bundle -->
     <div class="bundle-card" onclick="openStandardModal('Pro Bundle', 999)">
-      <div>
-        <div class="bundle-header">
-          <img src="Pro_Bundle.webp" alt="Pro Bundle Icon" class="bundle-icon" />
-          <div class="bundle-title">Pro Bundle</div>
-        </div>
-        <div class="price-row-container">
-          <div class="bundle-price">
-            <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 999
-          </div>
-        </div>
+      <div class="bundle-header">
+        <img src="Pro_Bundle.webp" class="bundle-icon" />
+        <div class="bundle-title">Pro Bundle</div>
+      </div>
+      <div class="price-row-container">
+        <div class="bundle-price"><img src="Robux_Icon.webp" class="robux-inline-icon" /> 999</div>
       </div>
       <button class="btn-select">Select Bundle</button>
     </div>
 
-    <!-- Pro VIP Bundle (Revealed upon VIP Discord verification) -->
     <div class="bundle-card vip" id="vipBundleCard" onclick="openStandardModal('Pro Bundle [👑 VIP Edition]', 899)">
-      <div>
-        <div class="bundle-header">
-          <img src="Pro_Bundle_VIP_Edition.webp" alt="VIP Bundle Icon" class="bundle-icon" />
-          <div class="bundle-title">Pro Bundle [👑 VIP Edition]</div>
-        </div>
-        <div class="price-row-container">
-          <div class="bundle-price">
-            <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 899
-          </div>
-          <span class="vip-badge">VIP Exclusive</span>
-        </div>
+      <div class="bundle-header">
+        <img src="Pro_Bundle_VIP_Edition.webp" class="bundle-icon" />
+        <div class="bundle-title">Pro Bundle [👑 VIP Edition]</div>
+      </div>
+      <div class="price-row-container">
+        <div class="bundle-price"><img src="Robux_Icon.webp" class="robux-inline-icon" /> 899</div>
       </div>
       <button class="btn-select">Select Bundle</button>
-    </div>
-
-    <!-- Server Modification Bundle -->
-    <div class="bundle-card" onclick="openServerModModal()">
-      <div>
-        <div class="bundle-header">
-          <img src="Server_Modification_Bundle.webp" alt="Server Mods Icon" class="bundle-icon" />
-          <div class="bundle-title">Server Modifications</div>
-        </div>
-        <div class="price-row-container">
-          <div class="bundle-price">
-            Custom / <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 110
-          </div>
-        </div>
-      </div>
-      <button class="btn-select">Select Modifications</button>
     </div>
   </div>
 
-  <!-- Standard Bundle Modal -->
+  <!-- Standard Checkout Modal -->
   <div class="modal-overlay" id="standardModal">
     <div class="modal-content">
       <button class="close-btn" onclick="closeModals()">&times;</button>
       <h2 id="modalTitle">Bundle Details</h2>
-      
+
+      <!-- Promo Code Section -->
+      <div class="promo-container">
+        <input type="text" id="promoInput" class="input-field" placeholder="Enter Promo Code" />
+        <button class="btn-apply" onclick="applyPromoCode()">Apply</button>
+      </div>
+      <div class="promo-message" id="promoMsg"></div>
+
       <div class="price-breakdown">
         <div class="price-row">
-          <span>Robux Cost:</span>
+          <span>Base Robux:</span>
           <span id="modalRobux">0</span>
+        </div>
+        <div class="price-row discount" id="discountRow" style="display:none;">
+          <span>Discount Applied:</span>
+          <span id="modalDiscount">-$0.00</span>
         </div>
         <div class="price-row total">
           <span>Total (USD):</span>
@@ -552,144 +494,216 @@
       </div>
 
       <div class="pay-btn-container">
-        <a id="payLink" href="#" target="_blank" rel="noopener noreferrer" class="pay-btn">
-          Proceed to Checkout
-        </a>
+        <a id="payLink" href="#" target="_blank" class="pay-btn">Proceed to Checkout</a>
       </div>
     </div>
   </div>
 
-  <!-- Server Modification Modal -->
-  <div class="modal-overlay" id="serverModModal">
-    <div class="modal-content">
+  <!-- Spencer Admin Modal -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal-content" style="max-width: 600px;">
       <button class="close-btn" onclick="closeModals()">&times;</button>
-      <h2>Server Modifications</h2>
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap;">
-        Pick individual options (<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" />29/modification) or purchase the full bundle for <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> 110.
-      </p>
+      <h2>⚙️ Code Manager</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Create, manage, and expire promo codes.</p>
 
-      <div class="mods-list">
-        <div class="mod-item">
-          <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Swapping bots</label>
-          <div class="mod-bio">Setup included!</div>
-        </div>
-        <div class="mod-item">
-          <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Editing bot settings</label>
-        </div>
-        <div class="mod-item">
-          <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Editing permissions</label>
-          <div class="mod-bio">Applicable on categories, channels, & roles!</div>
-        </div>
-        <div class="mod-item">
-          <label><input type="checkbox" class="mod-check" value="29" onchange="calculateModTotal()"> Editing Server Profile</label>
-        </div>
+      <!-- Code Creation Form -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+        <input type="text" id="adminCode" class="input-field" placeholder="Code (e.g. SUMMER26)" />
+        <select id="adminType" class="select-field">
+          <option value="none">No Reward (April Fools)</option>
+          <option value="discount_percent">% Percent Discount</option>
+          <option value="discount_robux">Flat Robux Discount</option>
+        </select>
       </div>
 
-      <div class="price-breakdown">
-        <div class="price-row">
-          <span>Selected Price:</span>
-          <span id="modRobux">0 Robux</span>
-        </div>
-        <div class="price-row total">
-          <span>Total (USD):</span>
-          <span id="modUSD">$0.00</span>
-        </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+        <input type="number" id="adminValue" class="input-field" placeholder="Value (e.g. 15 for 15%)" />
+        <input type="date" id="adminExp" class="input-field" />
       </div>
 
-      <div style="display: flex; gap: 10px; flex-direction: column;">
-        <button class="btn-select" style="background: rgba(94, 98, 106, 0.2); color: var(--text-main); border-color: rgba(94, 98, 106, 0.4); display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="selectAllMods()">
-          Buy full Bundle (<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:18px;height:18px;" /> 110)
-        </button>
-        <div class="pay-btn-container">
-          <a id="modPayLink" href="#" target="_blank" rel="noopener noreferrer" class="pay-btn">
-            Proceed to Checkout
-          </a>
-        </div>
-      </div>
+      <button class="btn-select" style="background: var(--logo-mid);" onclick="createAdminCode()">Create Code</button>
+
+      <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 20px 0;" />
+
+      <h3>Active Promo Codes</h3>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Reward</th>
+            <th>Value</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="adminTableBody">
+          <!-- JS Injected -->
+        </tbody>
+      </table>
     </div>
   </div>
-
-  <footer>
-    <p>&copy; SFC™ Services. Powered by Onramper & Solana.</p>
-  </footer>
 
   <script>
     const ROBUX_TO_USD_RATE = 0.0125;
     const WALLET_ADDRESS = "XEpoMmBFTLzujJuzZ9XmgM5NCgBou2F5N1prosvuuRU";
-    
-    // Set this to your actual Vercel endpoint domain (e.g. https://your-project.vercel.app/api/verify-vip)
-    const VERCEL_API_URL = "https://sfcservices-website-backend.vercel.app/api/verify-vip";
-    const DISCORD_CLIENT_ID = "1532736222810734763";
-    const REDIRECT_URI = window.location.origin + window.location.pathname;
+    const VERCEL_BACKEND = "https://sfcservices-website-backend.vercel.app";
+    const DISCORD_CLIENT_ID = "YOUR_DISCORD_CLIENT_ID";
+    const SPENCER_ID = "1300042213765546025";
+
+    let currentBaseRobux = 0;
+    let currentDiscountUsd = 0;
+    let loggedInUserId = null;
 
     function closeModals() {
       document.getElementById('standardModal').classList.remove('active');
-      document.getElementById('serverModModal').classList.remove('active');
+      document.getElementById('adminModal').classList.remove('active');
     }
 
-    function buildOnramperUrl(fiatAmount, fiatCurrency = 'usd') {
+    function buildOnramperUrl(fiatAmount) {
       const params = new URLSearchParams({
         skipTransactionScreen: 'true',
         txnType: 'buy',
         txnAmount: fiatAmount,
-        txnFiat: fiatCurrency.toLowerCase(),
+        txnFiat: 'usd',
         txnCrypto: 'sol',
         onlyCryptoNetworks: 'solana',
         networkWallets: `solana:${WALLET_ADDRESS}`
       });
-
       return `https://buy.onramper.com/?${params.toString()}`;
     }
 
     function openStandardModal(name, robux) {
-      const usdAmount = (robux * ROBUX_TO_USD_RATE).toFixed(2);
+      currentBaseRobux = robux;
+      currentDiscountUsd = 0;
 
       document.getElementById('modalTitle').innerText = name;
-      document.getElementById('modalRobux').innerHTML = `<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> ${robux}`;
-      document.getElementById('modalUSD').innerText = `$${usdAmount}`;
-      
-      document.getElementById('payLink').href = buildOnramperUrl(usdAmount, 'usd');
+      document.getElementById('modalRobux').innerHTML = `<img src="Robux_Icon.webp" class="robux-inline-icon" style="width:16px;height:16px;" /> ${robux}`;
+      document.getElementById('promoInput').value = '';
+      document.getElementById('promoMsg').innerText = '';
+      document.getElementById('discountRow').style.display = 'none';
 
+      updateCheckoutTotal();
       document.getElementById('standardModal').classList.add('active');
     }
 
-    function openServerModModal() {
-      calculateModTotal();
-      document.getElementById('serverModModal').classList.add('active');
+    function updateCheckoutTotal() {
+      const rawUsd = currentBaseRobux * ROBUX_TO_USD_RATE;
+      const finalUsd = Math.max(0, rawUsd - currentDiscountUsd).toFixed(2);
+
+      document.getElementById('modalUSD').innerText = `$${finalUsd}`;
+      document.getElementById('payLink').href = buildOnramperUrl(finalUsd);
     }
 
-    function calculateModTotal() {
-      const checkboxes = document.querySelectorAll('.mod-check');
-      let checkedCount = 0;
+    // Code Redemption Logic
+    async function applyPromoCode() {
+      const code = document.getElementById('promoInput').value.trim();
+      const msgElem = document.getElementById('promoMsg');
 
-      checkboxes.forEach(cb => {
-        if (cb.checked) checkedCount++;
+      if (!code) return;
+
+      try {
+        const res = await fetch(`${VERCEL_BACKEND}/api/redeem`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          msgElem.className = 'promo-message error';
+          msgElem.innerText = data.message;
+          return;
+        }
+
+        msgElem.className = 'promo-message success';
+        msgElem.innerText = data.message;
+
+        if (data.reward) {
+          const { rewardType, rewardValue } = data.reward;
+          const baseUsd = currentBaseRobux * ROBUX_TO_USD_RATE;
+
+          if (rewardType === 'discount_percent') {
+            currentDiscountUsd = baseUsd * (rewardValue / 100);
+          } else if (rewardType === 'discount_robux') {
+            currentDiscountUsd = rewardValue * ROBUX_TO_USD_RATE;
+          }
+
+          document.getElementById('modalDiscount').innerText = `-$${currentDiscountUsd.toFixed(2)}`;
+          document.getElementById('discountRow').style.display = 'flex';
+          updateCheckoutTotal();
+        }
+      } catch (err) {
+        msgElem.className = 'promo-message error';
+        msgElem.innerText = 'Failed to validate code.';
+      }
+    }
+
+    // Admin Panel Functions
+    function openAdminModal() {
+      fetchAdminCodes();
+      document.getElementById('adminModal').classList.add('active');
+    }
+
+    async function fetchAdminCodes() {
+      const tbody = document.getElementById('adminTableBody');
+      tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+
+      try {
+        const res = await fetch(`${VERCEL_BACKEND}/api/admin/codes`, {
+          headers: { 'Authorization': loggedInUserId }
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          tbody.innerHTML = data.codes.map(c => `
+            <tr>
+              <td><strong>${c.code}</strong></td>
+              <td>${c.rewardType}</td>
+              <td>${c.rewardValue ?? 'None (April Fools)'}</td>
+              <td><button class="btn-danger" onclick="deleteCode('${c.code}')">Delete</button></td>
+            </tr>
+          `).join('') || '<tr><td colspan="4">No active codes.</td></tr>';
+        }
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="4">Error loading codes.</td></tr>';
+      }
+    }
+
+    async function createAdminCode() {
+      const code = document.getElementById('adminCode').value;
+      const rewardType = document.getElementById('adminType').value;
+      const rewardValue = document.getElementById('adminValue').value;
+      const expirationDate = document.getElementById('adminExp').value;
+
+      await fetch(`${VERCEL_BACKEND}/api/admin/codes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': loggedInUserId
+        },
+        body: JSON.stringify({ code, rewardType, rewardValue: rewardValue ? Number(rewardValue) : null, expirationDate })
       });
 
-      let robux = checkedCount * 29;
-      if (checkedCount === 4) robux = 110;
-
-      updateModDisplay(robux);
+      fetchAdminCodes();
     }
 
-    function selectAllMods() {
-      const checkboxes = document.querySelectorAll('.mod-check');
-      checkboxes.forEach(cb => cb.checked = true);
-      updateModDisplay(110);
+    async function deleteCode(code) {
+      await fetch(`${VERCEL_BACKEND}/api/admin/codes`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': loggedInUserId
+        },
+        body: JSON.stringify({ code })
+      });
+
+      fetchAdminCodes();
     }
 
-    function updateModDisplay(robux) {
-      const usdAmount = (robux * ROBUX_TO_USD_RATE).toFixed(2);
-
-      document.getElementById('modRobux').innerHTML = `<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> ${robux}`;
-      document.getElementById('modUSD').innerText = `$${usdAmount}`;
-      document.getElementById('modPayLink').href = buildOnramperUrl(usdAmount, 'usd');
-    }
-
-    // Discord OAuth2 Flow
+    // Discord Login Verification
     function loginWithDiscord() {
-      const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify`;
-      window.location.href = authUrl;
+      const redirectUri = window.location.origin + window.location.pathname;
+      window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=identify`;
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
@@ -698,29 +712,34 @@
 
       if (code) {
         window.history.replaceState({}, document.title, window.location.pathname);
+        const redirectUri = window.location.origin + window.location.pathname;
 
         try {
-          const response = await fetch(VERCEL_API_URL, {
+          const response = await fetch(`${VERCEL_BACKEND}/api/verify-vip`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code, redirectUri: REDIRECT_URI })
+            body: JSON.stringify({ code, redirectUri })
           });
 
           const data = await response.json();
 
-          if (data.success && data.isVip) {
-            // Unhide VIP bundle card
-            document.getElementById('vipBundleCard').style.display = 'flex';
-            
+          if (data.success) {
+            loggedInUserId = data.userId;
             document.getElementById('discordLoginBtn').style.display = 'none';
             document.getElementById('discordUserStatus').style.display = 'inline-flex';
             document.getElementById('discordUsername').innerText = data.username;
-          } else {
-            alert('Verification failed: You must have the VIP role and an active ticket channel.');
+
+            if (data.isVip) {
+              document.getElementById('vipBundleCard').style.display = 'flex';
+            }
+
+            // Reveal Admin Panel Button if Spencer logs in
+            if (data.userId === SPENCER_ID) {
+              document.getElementById('adminPanelBtn').style.display = 'inline-block';
+            }
           }
         } catch (err) {
-          console.error('API Verification Error:', err);
-          alert('Failed to connect to verification backend.');
+          console.error('Auth Verification Error:', err);
         }
       }
     });
