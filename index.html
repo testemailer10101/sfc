@@ -284,6 +284,16 @@
       color: #fff;
       font-weight: 500;
       cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn-select:hover:not(:disabled) {
+      background: #3c3e43;
+    }
+
+    .btn-select:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     /* Modal Styling */
@@ -367,6 +377,7 @@
 
     .promo-message.success { color: var(--success); }
     .promo-message.error { color: var(--danger); }
+    .promo-message.warning { color: var(--gold); }
 
     .price-breakdown {
       background: rgba(0, 0, 0, 0.25);
@@ -474,6 +485,12 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 14px;
       cursor: pointer;
+      font-family: inherit;
+    }
+    
+    .pay-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     .admin-table {
@@ -532,7 +549,7 @@
     <div class="auth-container">
       <button class="btn-discord" id="discordLoginBtn" onclick="loginWithDiscord()">
         <svg viewBox="0 0 127.14 96.36"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0,-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a74.57,74.57,0,0,0,64.3,0c.87.68,1.76,1.36,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-18.88-72.15ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,45.92,53.87,53,48.81,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,45.92,96.1,53,91.05,65.69,84.69,65.69Z"/></svg>
-        Connect Discord for VIP Perks
+        Connect Discord for Checkout
       </button>
 
       <div class="user-status" id="discordUserStatus">
@@ -618,6 +635,16 @@
         </div>
       </div>
       <button class="btn-select">Rent Ad Space</button>
+    </div>
+
+    <!-- Custom Commission Card -->
+    <div class="bundle-card" onclick="openCommissionModal()">
+      <div class="bundle-header">
+        <span style="font-size: 1.5rem;">🛠️</span>
+        <div class="bundle-title">Pay Commission</div>
+      </div>
+      <p class="card-description">Checkout securely for your completed custom commission using your designated ticket ID.</p>
+      <button class="btn-select" style="background: rgba(88, 101, 242, 0.15); border-color: rgba(88, 101, 242, 0.3); color: #fff;">Pay Invoice</button>
     </div>
   </div>
 
@@ -767,6 +794,51 @@
     </div>
   </div>
 
+  <!-- Commission Authentication Modal -->
+  <div class="modal-overlay" id="commissionModal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModals()">&times;</button>
+      <h2>Pay Custom Commission</h2>
+      
+      <div id="commissionAuthWarning" class="promo-message warning" style="margin-top: 10px; display: none; text-align: center;">
+        ⚠️ You must connect your Discord account first to pay a commission ticket.
+      </div>
+
+      <div id="commissionFormContainer" style="display: none;">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; margin-bottom: 16px;">
+          Your Discord account will be verified against the members inside the ticket channel.
+        </p>
+        
+        <div style="text-align: left; margin-bottom: 16px;">
+          <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Ticket Channel Name or ID:</label>
+          <input type="text" id="commissionTicketId" class="input-field" placeholder="e.g. ticket-0123" />
+        </div>
+
+        <div style="text-align: left; margin-bottom: 16px;">
+          <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Agreed Robux Amount:</label>
+          <input type="number" id="commissionAmount" class="input-field" placeholder="e.g. 1500" oninput="calculateCommissionTotal()" />
+        </div>
+
+        <div class="promo-message" id="commissionStatusMsg" style="text-align: center;"></div>
+
+        <div class="price-breakdown">
+          <div class="price-row">
+            <span>Commission Robux:</span>
+            <span id="commissionRobuxDisplay"><img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> 0</span>
+          </div>
+          <div class="price-row total">
+            <span>Total (<span class="currency-label">USD</span>):</span>
+            <span id="commissionDisplayTotal">$0.00</span>
+          </div>
+        </div>
+
+        <div class="pay-btn-container">
+          <button id="verifyCommissionBtn" class="pay-btn" onclick="verifyAndPayCommission()">Verify Ticket Membership & Checkout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Admin Modal -->
   <div class="modal-overlay" id="adminModal">
     <div class="modal-content" style="max-width: 600px;">
@@ -830,19 +902,8 @@
 
     // Currency Switcher Logic
     let activeCurrency = 'USD';
-    let exchangeRates = {
-      USD: 1.0,
-      GBP: 0.78,
-      EUR: 0.92,
-      CAD: 1.36
-    };
-
-    const currencySymbols = {
-      USD: '$',
-      GBP: '£',
-      EUR: '€',
-      CAD: 'CA$'
-    };
+    let exchangeRates = { USD: 1.0, GBP: 0.78, EUR: 0.92, CAD: 1.36 };
+    const currencySymbols = { USD: '$', GBP: '£', EUR: '€', CAD: 'CA$' };
 
     async function fetchLiveRates() {
       try {
@@ -863,15 +924,12 @@
         const res = await fetch('https://ipapi.co/json/');
         if (res.ok) {
           const data = await res.json();
-          const detected = data.currency;
-          if (exchangeRates[detected]) {
-            activeCurrency = detected;
+          if (exchangeRates[data.currency]) {
+            activeCurrency = data.currency;
             document.getElementById('currencySelect').value = activeCurrency;
           }
         }
-      } catch (err) {
-        console.warn('Could not auto-detect Geo-IP currency. Defaulting to USD.');
-      }
+      } catch (err) {}
       refreshAllModalDisplays();
     }
 
@@ -885,6 +943,7 @@
       updateCheckoutTotal();
       updateModDisplay();
       calculateBillboardTotal();
+      calculateCommissionTotal();
     }
 
     function formatCurrency(usdValue) {
@@ -898,6 +957,7 @@
       document.getElementById('standardModal').classList.remove('active');
       document.getElementById('serverModModal').classList.remove('active');
       document.getElementById('billboardModal').classList.remove('active');
+      document.getElementById('commissionModal').classList.remove('active');
       document.getElementById('adminModal').classList.remove('active');
     }
 
@@ -916,13 +976,11 @@
     function openStandardModal(name, robux) {
       currentBaseRobux = robux;
       currentDiscountUsd = 0;
-
       document.getElementById('modalTitle').innerText = name;
       document.getElementById('modalRobux').innerHTML = `<img src="Robux_Icon.webp" class="robux-inline-icon" style="width:16px;height:16px;" /> ${robux}`;
       document.getElementById('promoInput').value = '';
       document.getElementById('promoMsg').innerText = '';
       document.getElementById('discountRow').style.display = 'none';
-
       updateCheckoutTotal();
       document.getElementById('standardModal').classList.add('active');
     }
@@ -945,17 +1003,30 @@
       document.getElementById('billboardModal').classList.add('active');
     }
 
+    function openCommissionModal() {
+      document.getElementById('commissionTicketId').value = '';
+      document.getElementById('commissionAmount').value = '';
+      document.getElementById('commissionStatusMsg').innerText = '';
+      calculateCommissionTotal();
+
+      if (!loggedInUserId) {
+        document.getElementById('commissionAuthWarning').style.display = 'block';
+        document.getElementById('commissionFormContainer').style.display = 'none';
+      } else {
+        document.getElementById('commissionAuthWarning').style.display = 'none';
+        document.getElementById('commissionFormContainer').style.display = 'block';
+      }
+      document.getElementById('commissionModal').classList.add('active');
+    }
+
     function calculateModTotal() {
       const checkboxes = document.querySelectorAll('.mod-check');
       let checkedCount = 0;
-
-      checkboxes.forEach(cb => {
-        if (cb.checked) checkedCount++;
-      });
-
+      checkboxes.forEach(cb => { if (cb.checked) checkedCount++; });
+      
       let robux = checkedCount * 29;
       if (checkedCount === 4) robux = 110;
-
+      
       currentModBaseRobux = robux;
       updateModDisplay();
     }
@@ -970,7 +1041,6 @@
     function calculateBillboardTotal() {
       const weeks = parseInt(document.getElementById('billboardWeeksSelect').value, 10);
       currentBillboardBaseRobux = weeks * 10;
-
       const rawUsd = currentBillboardBaseRobux * ROBUX_TO_USD_RATE;
       const finalUsd = Math.max(0, rawUsd - currentBillboardDiscountUsd).toFixed(2);
 
@@ -979,10 +1049,67 @@
       document.getElementById('billboardPayLink').href = buildOnramperUrl(finalUsd);
     }
 
+    function calculateCommissionTotal() {
+      const amount = parseFloat(document.getElementById('commissionAmount').value) || 0;
+      const finalUsd = (amount * ROBUX_TO_USD_RATE).toFixed(2);
+      
+      document.getElementById('commissionRobuxDisplay').innerHTML = `<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> ${amount}`;
+      document.getElementById('commissionDisplayTotal').innerText = formatCurrency(parseFloat(finalUsd));
+    }
+
+    async function verifyAndPayCommission() {
+      const ticketId = document.getElementById('commissionTicketId').value.trim();
+      const amount = parseFloat(document.getElementById('commissionAmount').value);
+      const msgElem = document.getElementById('commissionStatusMsg');
+      const btn = document.getElementById('verifyCommissionBtn');
+
+      if (!ticketId || !amount || amount <= 0) {
+        msgElem.className = 'promo-message error';
+        msgElem.innerText = 'Please enter a valid Ticket ID and Robux Amount.';
+        return;
+      }
+
+      msgElem.className = 'promo-message warning';
+      msgElem.innerText = 'Verifying Discord Ticket Membership...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`${VERCEL_BACKEND}/api/verify-ticket`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: loggedInUserId,
+            ticketId: ticketId
+          })
+        });
+        
+        const data = await res.json();
+
+        if (!data.success) {
+          msgElem.className = 'promo-message error';
+          msgElem.innerText = data.message || 'Verification failed: You are not in this ticket channel.';
+          btn.disabled = false;
+          return;
+        }
+
+        // Verification successful, redirect to Onramper
+        msgElem.className = 'promo-message success';
+        msgElem.innerText = 'Verified! Redirecting to checkout...';
+        
+        const finalUsd = (amount * ROBUX_TO_USD_RATE).toFixed(2);
+        window.open(buildOnramperUrl(finalUsd), '_blank');
+        btn.disabled = false;
+
+      } catch (err) {
+        msgElem.className = 'promo-message error';
+        msgElem.innerText = 'Failed to connect to backend for verification.';
+        btn.disabled = false;
+      }
+    }
+
     function updateModDisplay() {
       const rawUsd = currentModBaseRobux * ROBUX_TO_USD_RATE;
       const finalUsd = Math.max(0, rawUsd - currentModDiscountUsd).toFixed(2);
-
       document.getElementById('modRobux').innerHTML = `<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> ${currentModBaseRobux}`;
       document.getElementById('modDisplayTotal').innerText = formatCurrency(parseFloat(finalUsd));
       document.getElementById('modPayLink').href = buildOnramperUrl(finalUsd);
@@ -991,27 +1118,19 @@
     function updateCheckoutTotal() {
       const rawUsd = currentBaseRobux * ROBUX_TO_USD_RATE;
       const finalUsd = Math.max(0, rawUsd - currentDiscountUsd).toFixed(2);
-
       document.getElementById('modalDisplayTotal').innerText = formatCurrency(parseFloat(finalUsd));
       document.getElementById('payLink').href = buildOnramperUrl(finalUsd);
     }
 
-    // Code Redemption
     async function applyPromoCode(type) {
       let inputId = 'promoInput';
       let msgId = 'promoMsg';
 
-      if (type === 'mod') {
-        inputId = 'modPromoInput';
-        msgId = 'modPromoMsg';
-      } else if (type === 'billboard') {
-        inputId = 'billboardPromoInput';
-        msgId = 'billboardPromoMsg';
-      }
+      if (type === 'mod') { inputId = 'modPromoInput'; msgId = 'modPromoMsg'; } 
+      else if (type === 'billboard') { inputId = 'billboardPromoInput'; msgId = 'billboardPromoMsg'; }
 
       const code = document.getElementById(inputId).value.trim();
       const msgElem = document.getElementById(msgId);
-
       if (!code) return;
 
       try {
@@ -1020,7 +1139,6 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ code })
         });
-
         const data = await res.json();
 
         if (!data.success) {
@@ -1034,34 +1152,24 @@
 
         if (data.reward) {
           const { rewardType, rewardValue } = data.reward;
-
           if (type === 'standard') {
             const baseUsd = currentBaseRobux * ROBUX_TO_USD_RATE;
-            if (rewardType === 'discount_percent') {
-              currentDiscountUsd = baseUsd * (rewardValue / 100);
-            } else if (rewardType === 'discount_robux') {
-              currentDiscountUsd = rewardValue * ROBUX_TO_USD_RATE;
-            }
+            if (rewardType === 'discount_percent') currentDiscountUsd = baseUsd * (rewardValue / 100);
+            else if (rewardType === 'discount_robux') currentDiscountUsd = rewardValue * ROBUX_TO_USD_RATE;
             document.getElementById('modalDiscount').innerText = `-${formatCurrency(currentDiscountUsd)}`;
             document.getElementById('discountRow').style.display = 'flex';
             updateCheckoutTotal();
           } else if (type === 'mod') {
             const baseUsd = currentModBaseRobux * ROBUX_TO_USD_RATE;
-            if (rewardType === 'discount_percent') {
-              currentModDiscountUsd = baseUsd * (rewardValue / 100);
-            } else if (rewardType === 'discount_robux') {
-              currentModDiscountUsd = rewardValue * ROBUX_TO_USD_RATE;
-            }
+            if (rewardType === 'discount_percent') currentModDiscountUsd = baseUsd * (rewardValue / 100);
+            else if (rewardType === 'discount_robux') currentModDiscountUsd = rewardValue * ROBUX_TO_USD_RATE;
             document.getElementById('modDiscount').innerText = `-${formatCurrency(currentModDiscountUsd)}`;
             document.getElementById('modDiscountRow').style.display = 'flex';
             updateModDisplay();
           } else if (type === 'billboard') {
             const baseUsd = currentBillboardBaseRobux * ROBUX_TO_USD_RATE;
-            if (rewardType === 'discount_percent') {
-              currentBillboardDiscountUsd = baseUsd * (rewardValue / 100);
-            } else if (rewardType === 'discount_robux') {
-              currentBillboardDiscountUsd = rewardValue * ROBUX_TO_USD_RATE;
-            }
+            if (rewardType === 'discount_percent') currentBillboardDiscountUsd = baseUsd * (rewardValue / 100);
+            else if (rewardType === 'discount_robux') currentBillboardDiscountUsd = rewardValue * ROBUX_TO_USD_RATE;
             document.getElementById('billboardDiscount').innerText = `-${formatCurrency(currentBillboardDiscountUsd)}`;
             document.getElementById('billboardDiscountRow').style.display = 'flex';
             calculateBillboardTotal();
@@ -1073,7 +1181,6 @@
       }
     }
 
-    // Admin Functions
     function openAdminModal() {
       fetchAdminCodes();
       document.getElementById('adminModal').classList.add('active');
@@ -1082,19 +1189,15 @@
     async function fetchAdminCodes() {
       const tbody = document.getElementById('adminTableBody');
       tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
-
       try {
-        const res = await fetch(`${VERCEL_BACKEND}/api/admin/codes`, {
-          headers: { 'Authorization': loggedInUserId }
-        });
+        const res = await fetch(`${VERCEL_BACKEND}/api/admin/codes`, { headers: { 'Authorization': loggedInUserId } });
         const data = await res.json();
-
         if (data.success) {
           tbody.innerHTML = data.codes.map(c => `
             <tr>
               <td><strong>${c.code}</strong></td>
               <td>${c.rewardType}</td>
-              <td>${c.rewardValue ?? 'None (April Fools)'}</td>
+              <td>${c.rewardValue ?? 'None'}</td>
               <td><button class="btn-danger" onclick="deleteCode('${c.code}')">Delete</button></td>
             </tr>
           `).join('') || '<tr><td colspan="4">No active codes.</td></tr>';
@@ -1109,33 +1212,23 @@
       const rewardType = document.getElementById('adminType').value;
       const rewardValue = document.getElementById('adminValue').value;
       const expirationDate = document.getElementById('adminExp').value;
-
       await fetch(`${VERCEL_BACKEND}/api/admin/codes`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': loggedInUserId
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': loggedInUserId },
         body: JSON.stringify({ code, rewardType, rewardValue: rewardValue ? Number(rewardValue) : null, expirationDate })
       });
-
       fetchAdminCodes();
     }
 
     async function deleteCode(code) {
       await fetch(`${VERCEL_BACKEND}/api/admin/codes`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': loggedInUserId
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': loggedInUserId },
         body: JSON.stringify({ code })
       });
-
       fetchAdminCodes();
     }
 
-    // Auth & Persistence Logic
     function applyUserSession(user) {
       loggedInUserId = user.userId;
       document.getElementById('discordLoginBtn').style.display = 'none';
@@ -1143,7 +1236,6 @@
       document.getElementById('discordUsername').innerText = user.username;
 
       const vipOptions = document.querySelectorAll('.vip-option');
-
       if (user.isVip) {
         document.getElementById('vipBadge').style.display = 'inline-block';
         document.getElementById('vipBundleCard').style.display = 'flex';
@@ -1169,9 +1261,7 @@
       document.getElementById('vipBadge').style.display = 'none';
       document.getElementById('vipBundleCard').style.display = 'none';
       document.getElementById('adminPanelBtn').style.display = 'none';
-      
-      const vipOptions = document.querySelectorAll('.vip-option');
-      vipOptions.forEach(opt => opt.style.display = 'none');
+      document.querySelectorAll('.vip-option').forEach(opt => opt.style.display = 'none');
     }
 
     function loginWithDiscord() {
@@ -1180,52 +1270,36 @@
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
-      // Initialize rates and auto-detect geolocation currency
       await fetchLiveRates();
       await autoDetectCurrency();
 
-      // 1. Check for active session in localStorage
       const savedSession = localStorage.getItem('sfc_user_session');
       if (savedSession) {
         try {
-          const user = JSON.parse(savedSession);
-          applyUserSession(user);
+          applyUserSession(JSON.parse(savedSession));
         } catch (e) {
           localStorage.removeItem('sfc_user_session');
         }
       }
 
-      // 2. Check for fresh OAuth code in URL query string
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
-
       if (code) {
         window.history.replaceState({}, document.title, window.location.pathname);
         const redirectUri = window.location.origin + window.location.pathname;
-
         try {
           const response = await fetch(`${VERCEL_BACKEND}/api/verify-vip`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ code, redirectUri })
           });
-
           const data = await response.json();
-
           if (data.success) {
-            const userSession = {
-              userId: data.userId,
-              username: data.username,
-              isVip: data.isVip
-            };
-
-            // Store in LocalStorage to persist across refreshes
+            const userSession = { userId: data.userId, username: data.username, isVip: data.isVip };
             localStorage.setItem('sfc_user_session', JSON.stringify(userSession));
             applyUserSession(userSession);
           }
-        } catch (err) {
-          console.error('Auth Verification Error:', err);
-        }
+        } catch (err) {}
       }
     });
   </script>
