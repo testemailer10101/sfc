@@ -381,13 +381,13 @@
       background: rgba(88, 101, 242, 0.08);
       border: 1px solid rgba(88, 101, 242, 0.25);
       border-radius: 14px;
-      padding: 14px;
-      margin-top: 16px;
+      padding: 16px;
+      margin: 16px 0;
       text-align: left;
     }
 
     .commission-section h4 {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       margin-bottom: 8px;
       color: #a5b4fc;
       display: flex;
@@ -507,6 +507,18 @@
     .pay-btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+
+    .btn-secondary-action {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      margin-bottom: 12px;
+      display: inline-block;
     }
 
     .admin-table {
@@ -654,47 +666,76 @@
     </div>
   </div>
 
-  <!-- Standard Checkout Modal (Handles standard purchases & integrated commission ticket selection) -->
+  <!-- Standard Modal (Step 1: Item & Promo -> Step 2: Commissions & Checkout) -->
   <div class="modal-overlay" id="standardModal">
     <div class="modal-content">
       <button class="close-btn" onclick="closeModals()">&times;</button>
-      <h2 id="modalTitle">Bundle Details</h2>
 
-      <!-- Integrated Commission Selection Box -->
-      <div class="commission-section" id="commissionSection" style="display: none;">
-        <h4>🛠️ Active Commission Tickets</h4>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
-          You own active commission tickets. Choose whether to pay for a commission or proceed with this standard bundle:
-        </p>
-        <select id="commissionTicketSelect" class="select-field" onchange="handleCommissionSelectChange()">
-          <option value="none">-- Pay Standard Bundle Item --</option>
-        </select>
-      </div>
+      <!-- STEP 1 VIEW -->
+      <div id="modalStep1">
+        <h2 id="modalTitle">Bundle Details</h2>
 
-      <div class="promo-container" id="promoContainer">
-        <input type="text" id="promoInput" class="input-field" placeholder="Enter Promo Code" />
-        <button class="btn-apply" onclick="applyPromoCode('standard')">Apply</button>
-      </div>
-      <div class="promo-message" id="promoMsg"></div>
-
-      <div class="price-breakdown">
-        <div class="price-row">
-          <span>Robux Amount:</span>
-          <span id="modalRobux">0</span>
+        <div class="promo-container" id="promoContainer">
+          <input type="text" id="promoInput" class="input-field" placeholder="Enter Promo Code" />
+          <button class="btn-apply" onclick="applyPromoCode('standard')">Apply</button>
         </div>
-        <div class="price-row discount" id="discountRow" style="display:none;">
-          <span>Discount Applied:</span>
-          <span id="modalDiscount">-$0.00</span>
+        <div class="promo-message" id="promoMsg"></div>
+
+        <div class="price-breakdown">
+          <div class="price-row">
+            <span>Robux Amount:</span>
+            <span id="modalRobux">0</span>
+          </div>
+          <div class="price-row discount" id="discountRow" style="display:none;">
+            <span>Discount Applied:</span>
+            <span id="modalDiscount">-$0.00</span>
+          </div>
+          <div class="price-row total">
+            <span>Total (<span class="currency-label">USD</span>):</span>
+            <span id="modalDisplayTotal">$0.00</span>
+          </div>
         </div>
-        <div class="price-row total">
-          <span>Total (<span class="currency-label">USD</span>):</span>
-          <span id="modalDisplayTotal">$0.00</span>
+
+        <div class="pay-btn-container">
+          <button class="pay-btn" onclick="goToStep2()">Continue</button>
         </div>
       </div>
 
-      <div class="pay-btn-container">
-        <a id="payLink" href="#" target="_blank" class="pay-btn">Proceed to Checkout</a>
+      <!-- STEP 2 VIEW (COMMISSION TICKET SELECTION & CHECKOUT) -->
+      <div id="modalStep2" style="display: none;">
+        <button class="btn-secondary-action" onclick="goToStep1()">← Back to Details</button>
+        <h2 id="step2Title">Select Item or Commission</h2>
+
+        <div class="commission-section" id="commissionSection">
+          <h4>🛠️ Active Commission Tickets</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;" id="commissionSectionDesc">
+            Loading your commissions...
+          </p>
+          <select id="commissionTicketSelect" class="select-field" onchange="handleCommissionSelectChange()">
+            <!-- Options dynamically injected -->
+          </select>
+        </div>
+
+        <div class="price-breakdown">
+          <div class="price-row">
+            <span>Robux Amount:</span>
+            <span id="step2Robux">0</span>
+          </div>
+          <div class="price-row discount" id="step2DiscountRow" style="display:none;">
+            <span>Discount Applied:</span>
+            <span id="step2Discount">-$0.00</span>
+          </div>
+          <div class="price-row total">
+            <span>Total (<span class="currency-label">USD</span>):</span>
+            <span id="step2DisplayTotal">$0.00</span>
+          </div>
+        </div>
+
+        <div class="pay-btn-container">
+          <a id="payLink" href="#" target="_blank" class="pay-btn">Checkout</a>
+        </div>
       </div>
+
     </div>
   </div>
 
@@ -751,7 +792,7 @@
         </button>
         <div class="pay-btn-container">
           <a id="modPayLink" href="#" target="_blank" rel="noopener noreferrer" class="pay-btn">
-            Proceed to Checkout
+            Checkout
           </a>
         </div>
       </div>
@@ -806,7 +847,7 @@
       </div>
 
       <div class="pay-btn-container">
-        <a id="billboardPayLink" href="#" target="_blank" class="pay-btn">Proceed to Checkout</a>
+        <a id="billboardPayLink" href="#" target="_blank" class="pay-btn">Checkout</a>
       </div>
     </div>
   </div>
@@ -867,6 +908,7 @@
     let selectedBundleRobux = 0;
     let currentBaseRobux = 0;
     let currentDiscountUsd = 0;
+
     let currentModBaseRobux = 0;
     let currentModDiscountUsd = 0;
     let currentBillboardBaseRobux = 10;
@@ -960,7 +1002,7 @@
       return [];
     }
 
-    async function openStandardModal(name, robux) {
+    function openStandardModal(name, robux) {
       selectedBundleName = name;
       selectedBundleRobux = robux;
       currentBaseRobux = robux;
@@ -971,46 +1013,58 @@
       document.getElementById('promoMsg').innerText = '';
       document.getElementById('discountRow').style.display = 'none';
 
-      // Read & display user commission tickets directly in checkout
-      const commSection = document.getElementById('commissionSection');
-      const ticketSelect = document.getElementById('commissionTicketSelect');
-      
-      if (loggedInUserId) {
-        userCommissionTickets = await fetchUserCommissionTickets();
-        if (userCommissionTickets.length > 0) {
-          ticketSelect.innerHTML = `<option value="none">-- Select standard item: ${name} (${robux} Robux) --</option>`;
-          userCommissionTickets.forEach(ticket => {
-            ticketSelect.innerHTML += `<option value="${ticket.ticketId}" data-amount="${ticket.amount}">Ticket: ${ticket.ticketId} (${ticket.amount} Robux)</option>`;
-          });
-          commSection.style.display = 'block';
-        } else {
-          commSection.style.display = 'none';
-        }
-      } else {
-        commSection.style.display = 'none';
-      }
-
+      goToStep1();
       updateCheckoutTotal();
       document.getElementById('standardModal').classList.add('active');
+    }
+
+    function goToStep1() {
+      document.getElementById('modalStep1').style.display = 'block';
+      document.getElementById('modalStep2').style.display = 'none';
+    }
+
+    async function goToStep2() {
+      document.getElementById('modalStep1').style.display = 'none';
+      document.getElementById('modalStep2').style.display = 'block';
+
+      const ticketSelect = document.getElementById('commissionTicketSelect');
+      const descElem = document.getElementById('commissionSectionDesc');
+      ticketSelect.innerHTML = '';
+
+      if (loggedInUserId) {
+        descElem.innerText = 'Fetching your active commission tickets...';
+        userCommissionTickets = await fetchUserCommissionTickets();
+
+        ticketSelect.innerHTML = `<option value="none">-- Pay Standard Item: ${selectedBundleName} (${selectedBundleRobux} Robux) --</option>`;
+        
+        if (userCommissionTickets.length > 0) {
+          descElem.innerText = 'Select a commission ticket to pay, or stay with your selected bundle:';
+          userCommissionTickets.forEach(ticket => {
+            ticketSelect.innerHTML += `<option value="${ticket.ticketId}" data-amount="${ticket.amount}">Commission Ticket: #${ticket.ticketId} (${ticket.amount} Robux)</option>`;
+          });
+        } else {
+          descElem.innerText = 'No active commission tickets found for your account. Proceeding with your selected item:';
+        }
+      } else {
+        descElem.innerText = 'Connect Discord to view your commission tickets. Proceeding with selected bundle:';
+        ticketSelect.innerHTML = `<option value="none">-- Standard Item: ${selectedBundleName} (${selectedBundleRobux} Robux) --</option>`;
+      }
+
+      handleCommissionSelectChange();
     }
 
     function handleCommissionSelectChange() {
       const select = document.getElementById('commissionTicketSelect');
       const selectedOption = select.options[select.selectedIndex];
-      const val = select.value;
+      const val = select ? select.value : 'none';
 
-      if (val === 'none') {
-        document.getElementById('modalTitle').innerText = selectedBundleName;
+      if (!val || val === 'none') {
+        document.getElementById('step2Title').innerText = selectedBundleName;
         currentBaseRobux = selectedBundleRobux;
-        document.getElementById('promoContainer').style.display = 'flex';
       } else {
         const ticketAmount = parseFloat(selectedOption.getAttribute('data-amount')) || 0;
-        document.getElementById('modalTitle').innerText = `Commission: ${val}`;
+        document.getElementById('step2Title').innerText = `Commission Ticket: #${val}`;
         currentBaseRobux = ticketAmount;
-        document.getElementById('promoContainer').style.display = 'none';
-        document.getElementById('promoMsg').innerText = '';
-        currentDiscountUsd = 0;
-        document.getElementById('discountRow').style.display = 'none';
       }
 
       updateCheckoutTotal();
@@ -1075,8 +1129,22 @@
     function updateCheckoutTotal() {
       const rawUsd = currentBaseRobux * ROBUX_TO_USD_RATE;
       const finalUsd = Math.max(0, rawUsd - currentDiscountUsd).toFixed(2);
+      
+      // Step 1 displays
       document.getElementById('modalRobux').innerHTML = `<img src="Robux_Icon.webp" class="robux-inline-icon" style="width:16px;height:16px;" /> ${currentBaseRobux}`;
       document.getElementById('modalDisplayTotal').innerText = formatCurrency(parseFloat(finalUsd));
+      
+      // Step 2 displays
+      document.getElementById('step2Robux').innerHTML = `<img src="Robux_Icon.webp" class="robux-inline-icon" style="width:16px;height:16px;" /> ${currentBaseRobux}`;
+      document.getElementById('step2DisplayTotal').innerText = formatCurrency(parseFloat(finalUsd));
+      
+      if (currentDiscountUsd > 0) {
+        document.getElementById('step2Discount').innerText = `-${formatCurrency(currentDiscountUsd)}`;
+        document.getElementById('step2DiscountRow').style.display = 'flex';
+      } else {
+        document.getElementById('step2DiscountRow').style.display = 'none';
+      }
+
       document.getElementById('payLink').href = buildOnramperUrl(finalUsd);
     }
 
