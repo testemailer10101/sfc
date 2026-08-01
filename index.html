@@ -176,10 +176,11 @@
       border-color: rgba(255, 255, 255, 0.2);
     }
 
+    /* Hidden by default; displayed only when user logs in with VIP role */
     .bundle-card.vip {
+      display: none;
       border-color: rgba(94, 98, 106, 0.4);
       background: linear-gradient(180deg, rgba(94, 98, 106, 0.2) 0%, var(--card-bg) 100%);
-      display: none;
     }
 
     .bundle-header {
@@ -459,7 +460,6 @@
 
       <div class="user-status" id="discordUserStatus">
         <span>Logged in as <strong id="discordUsername"></strong></span>
-        <!-- Hide by default -->
         <span class="status-badge" id="vipBadge" style="display: none;">VIP Verified</span>
       </div>
 
@@ -501,6 +501,7 @@
       <button class="btn-select">Select Bundle</button>
     </div>
 
+    <!-- VIP Bundle Card (Hidden by default) -->
     <div class="bundle-card vip" id="vipBundleCard" onclick="openStandardModal('Pro Bundle [👑 VIP Edition]', 899)">
       <div class="bundle-header">
         <img src="Pro_Bundle_VIP_Edition.webp" class="bundle-icon" />
@@ -547,11 +548,11 @@
         </div>
         <div class="price-row discount" id="discountRow" style="display:none;">
           <span>Discount Applied:</span>
-          <span id="modalDiscount">-$0.00</span>
+          <span id="modalDiscount">-₹0.00</span>
         </div>
         <div class="price-row total">
-          <span>Total (USD):</span>
-          <span id="modalUSD">$0.00</span>
+          <span>Total (INR):</span>
+          <span id="modalINR">₹0.00</span>
         </div>
       </div>
 
@@ -601,11 +602,11 @@
         </div>
         <div class="price-row discount" id="modDiscountRow" style="display:none;">
           <span>Discount Applied:</span>
-          <span id="modDiscount">-$0.00</span>
+          <span id="modDiscount">-₹0.00</span>
         </div>
         <div class="price-row total">
-          <span>Total (USD):</span>
-          <span id="modUSD">$0.00</span>
+          <span>Total (INR):</span>
+          <span id="modINR">₹0.00</span>
         </div>
       </div>
 
@@ -622,7 +623,7 @@
     </div>
   </div>
 
-  <!-- Spencer Admin Modal -->
+  <!-- Admin Modal -->
   <div class="modal-overlay" id="adminModal">
     <div class="modal-content" style="max-width: 600px;">
       <button class="close-btn" onclick="closeModals()">&times;</button>
@@ -669,16 +670,16 @@
   </footer>
 
   <script>
-    const ROBUX_TO_USD_RATE = 0.0125;
+    const ROBUX_TO_INR_RATE = 1.05;
     const WALLET_ADDRESS = "XEpoMmBFTLzujJuzZ9XmgM5NCgBou2F5N1prosvuuRU";
     const VERCEL_BACKEND = "https://sfcservices-website-backend.vercel.app";
     const DISCORD_CLIENT_ID = "1532736222810734763";
     const SPENCER_ID = "1300042213765546025";
 
     let currentBaseRobux = 0;
-    let currentDiscountUsd = 0;
+    let currentDiscountInr = 0;
     let currentModBaseRobux = 0;
-    let currentModDiscountUsd = 0;
+    let currentModDiscountInr = 0;
     let loggedInUserId = null;
 
     function closeModals() {
@@ -692,7 +693,7 @@
         skipTransactionScreen: 'true',
         txnType: 'buy',
         txnAmount: fiatAmount,
-        txnFiat: 'usd',
+        txnFiat: 'inr',
         txnCrypto: 'sol',
         onlyCryptoNetworks: 'solana',
         networkWallets: `solana:${WALLET_ADDRESS}`
@@ -702,7 +703,7 @@
 
     function openStandardModal(name, robux) {
       currentBaseRobux = robux;
-      currentDiscountUsd = 0;
+      currentDiscountInr = 0;
 
       document.getElementById('modalTitle').innerText = name;
       document.getElementById('modalRobux').innerHTML = `<img src="Robux_Icon.webp" class="robux-inline-icon" style="width:16px;height:16px;" /> ${robux}`;
@@ -715,7 +716,7 @@
     }
 
     function openServerModModal() {
-      currentModDiscountUsd = 0;
+      currentModDiscountInr = 0;
       document.getElementById('modPromoInput').value = '';
       document.getElementById('modPromoMsg').innerText = '';
       document.getElementById('modDiscountRow').style.display = 'none';
@@ -746,20 +747,20 @@
     }
 
     function updateModDisplay() {
-      const rawUsd = currentModBaseRobux * ROBUX_TO_USD_RATE;
-      const finalUsd = Math.max(0, rawUsd - currentModDiscountUsd).toFixed(2);
+      const rawInr = currentModBaseRobux * ROBUX_TO_INR_RATE;
+      const finalInr = Math.max(0, rawInr - currentModDiscountInr).toFixed(2);
 
       document.getElementById('modRobux').innerHTML = `<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> ${currentModBaseRobux}`;
-      document.getElementById('modUSD').innerText = `$${finalUsd}`;
-      document.getElementById('modPayLink').href = buildOnramperUrl(finalUsd);
+      document.getElementById('modINR').innerText = `₹${finalInr}`;
+      document.getElementById('modPayLink').href = buildOnramperUrl(finalInr);
     }
 
     function updateCheckoutTotal() {
-      const rawUsd = currentBaseRobux * ROBUX_TO_USD_RATE;
-      const finalUsd = Math.max(0, rawUsd - currentDiscountUsd).toFixed(2);
+      const rawInr = currentBaseRobux * ROBUX_TO_INR_RATE;
+      const finalInr = Math.max(0, rawInr - currentDiscountInr).toFixed(2);
 
-      document.getElementById('modalUSD').innerText = `$${finalUsd}`;
-      document.getElementById('payLink').href = buildOnramperUrl(finalUsd);
+      document.getElementById('modalINR').innerText = `₹${finalInr}`;
+      document.getElementById('payLink').href = buildOnramperUrl(finalInr);
     }
 
     // Code Redemption Logic
@@ -793,23 +794,23 @@
           const { rewardType, rewardValue } = data.reward;
 
           if (type === 'standard') {
-            const baseUsd = currentBaseRobux * ROBUX_TO_USD_RATE;
+            const baseInr = currentBaseRobux * ROBUX_TO_INR_RATE;
             if (rewardType === 'discount_percent') {
-              currentDiscountUsd = baseUsd * (rewardValue / 100);
+              currentDiscountInr = baseInr * (rewardValue / 100);
             } else if (rewardType === 'discount_robux') {
-              currentDiscountUsd = rewardValue * ROBUX_TO_USD_RATE;
+              currentDiscountInr = rewardValue * ROBUX_TO_INR_RATE;
             }
-            document.getElementById('modalDiscount').innerText = `-$${currentDiscountUsd.toFixed(2)}`;
+            document.getElementById('modalDiscount').innerText = `-₹${currentDiscountInr.toFixed(2)}`;
             document.getElementById('discountRow').style.display = 'flex';
             updateCheckoutTotal();
           } else {
-            const baseUsd = currentModBaseRobux * ROBUX_TO_USD_RATE;
+            const baseInr = currentModBaseRobux * ROBUX_TO_INR_RATE;
             if (rewardType === 'discount_percent') {
-              currentModDiscountUsd = baseUsd * (rewardValue / 100);
+              currentModDiscountInr = baseInr * (rewardValue / 100);
             } else if (rewardType === 'discount_robux') {
-              currentModDiscountUsd = rewardValue * ROBUX_TO_USD_RATE;
+              currentModDiscountInr = rewardValue * ROBUX_TO_INR_RATE;
             }
-            document.getElementById('modDiscount').innerText = `-$${currentModDiscountUsd.toFixed(2)}`;
+            document.getElementById('modDiscount').innerText = `-₹${currentModDiscountInr.toFixed(2)}`;
             document.getElementById('modDiscountRow').style.display = 'flex';
             updateModDisplay();
           }
@@ -910,10 +911,11 @@
             document.getElementById('discordLoginBtn').style.display = 'none';
             document.getElementById('discordUserStatus').style.display = 'inline-flex';
             document.getElementById('discordUsername').innerText = data.username;
-          
+
+            // Only display VIP badge and VIP Bundle Card if user is verified VIP
             if (data.isVip) {
-              document.getElementById('vipBadge').style.display = 'inline-block'; // Show badge
-              document.getElementById('vipBundleCard').style.display = 'flex';     // Show bundle
+              document.getElementById('vipBadge').style.display = 'inline-block';
+              document.getElementById('vipBundleCard').style.display = 'flex';
             }
 
             if (data.userId === SPENCER_ID) {
