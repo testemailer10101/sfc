@@ -220,6 +220,13 @@
       font-weight: 700;
     }
 
+    .card-description {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
     .price-row-container {
       display: flex;
       align-items: center;
@@ -232,7 +239,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 700;
     }
 
@@ -406,6 +413,23 @@
       margin-top: 4px;
     }
 
+    .billboard-info {
+      text-align: left;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 0.85rem;
+      margin: 12px 0;
+      line-height: 1.5;
+    }
+
+    .billboard-info ul {
+      margin-left: 18px;
+      margin-top: 6px;
+      color: var(--text-muted);
+    }
+
     .pay-btn-container {
       position: relative;
       width: 100%;
@@ -468,7 +492,7 @@
       <img src="SFCTM_Services_Logo_Refreshed.webp" alt="SFC™ Logo" />
     </div>
     <h1>SFC™ Services</h1>
-    <p class="subtitle">Select a Bundle to proceed with your purchase</p>
+    <p class="subtitle">Select a Service or Bundle to proceed with your purchase</p>
 
     <div class="auth-container">
       <button class="btn-discord" id="discordLoginBtn" onclick="loginWithDiscord()">
@@ -544,6 +568,21 @@
         </div>
       </div>
       <button class="btn-select">Select Modifications</button>
+    </div>
+
+    <!-- Billboard Rental Card -->
+    <div class="bundle-card" onclick="openBillboardModal()">
+      <div class="bundle-header">
+        <span style="font-size: 1.5rem;">🖥️</span>
+        <div class="bundle-title">Rent our Billboard!</div>
+      </div>
+      <p class="card-description">Promote your refreshed Discord server in our dedicated ad channels to everyone in SFC™ Services.</p>
+      <div class="price-row-container">
+        <div class="bundle-price">
+          <img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" /> 10 <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 400;">/ week</span>
+        </div>
+      </div>
+      <button class="btn-select">Rent Ad Space</button>
     </div>
   </div>
 
@@ -640,6 +679,59 @@
     </div>
   </div>
 
+  <!-- Billboard Modal -->
+  <div class="modal-overlay" id="billboardModal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModals()">&times;</button>
+      <h2>Rent our Billboard!</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Post a promotional showcase of your server in SFC™ Services.</p>
+
+      <div style="margin: 16px 0; text-align: left;">
+        <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Select Ad Duration:</label>
+        <select id="billboardWeeksSelect" class="select-field" onchange="calculateBillboardTotal()">
+          <option value="1">1 Week (10 Robux)</option>
+          <option value="2">2 Weeks (20 Robux)</option>
+          <option value="3" class="vip-option" style="display:none;">3 Weeks (30 Robux) - 👑 VIP</option>
+          <option value="4" class="vip-option" style="display:none;">1 Month (40 Robux) - 👑 VIP 2x Duration</option>
+        </select>
+      </div>
+
+      <div class="billboard-info">
+        <strong>📋 Steps after purchase:</strong>
+        <ul>
+          <li>Open a support ticket in our Discord server.</li>
+          <li>Copy & paste your invoice template.</li>
+          <li>A staff member will assist you shortly!</li>
+        </ul>
+      </div>
+
+      <div class="promo-container">
+        <input type="text" id="billboardPromoInput" class="input-field" placeholder="Enter Promo Code" />
+        <button class="btn-apply" onclick="applyPromoCode('billboard')">Apply</button>
+      </div>
+      <div class="promo-message" id="billboardPromoMsg"></div>
+
+      <div class="price-breakdown">
+        <div class="price-row">
+          <span>Robux Amount:</span>
+          <span id="billboardRobux">10 Robux</span>
+        </div>
+        <div class="price-row discount" id="billboardDiscountRow" style="display:none;">
+          <span>Discount Applied:</span>
+          <span id="billboardDiscount">-£0.00</span>
+        </div>
+        <div class="price-row total">
+          <span>Total (GBP):</span>
+          <span id="billboardGBP">£0.12</span>
+        </div>
+      </div>
+
+      <div class="pay-btn-container">
+        <a id="billboardPayLink" href="#" target="_blank" class="pay-btn">Proceed to Checkout</a>
+      </div>
+    </div>
+  </div>
+
   <!-- Admin Modal -->
   <div class="modal-overlay" id="adminModal">
     <div class="modal-content" style="max-width: 600px;">
@@ -696,11 +788,14 @@
     let currentDiscountGbp = 0;
     let currentModBaseRobux = 0;
     let currentModDiscountGbp = 0;
+    let currentBillboardBaseRobux = 10;
+    let currentBillboardDiscountGbp = 0;
     let loggedInUserId = null;
 
     function closeModals() {
       document.getElementById('standardModal').classList.remove('active');
       document.getElementById('serverModModal').classList.remove('active');
+      document.getElementById('billboardModal').classList.remove('active');
       document.getElementById('adminModal').classList.remove('active');
     }
 
@@ -740,6 +835,15 @@
       document.getElementById('serverModModal').classList.add('active');
     }
 
+    function openBillboardModal() {
+      currentBillboardDiscountGbp = 0;
+      document.getElementById('billboardPromoInput').value = '';
+      document.getElementById('billboardPromoMsg').innerText = '';
+      document.getElementById('billboardDiscountRow').style.display = 'none';
+      calculateBillboardTotal();
+      document.getElementById('billboardModal').classList.add('active');
+    }
+
     function calculateModTotal() {
       const checkboxes = document.querySelectorAll('.mod-check');
       let checkedCount = 0;
@@ -762,6 +866,18 @@
       updateModDisplay();
     }
 
+    function calculateBillboardTotal() {
+      const weeks = parseInt(document.getElementById('billboardWeeksSelect').value, 10);
+      currentBillboardBaseRobux = weeks * 10;
+
+      const rawGbp = currentBillboardBaseRobux * ROBUX_TO_GBP_RATE;
+      const finalGbp = Math.max(0, rawGbp - currentBillboardDiscountGbp).toFixed(2);
+
+      document.getElementById('billboardRobux').innerHTML = `<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> ${currentBillboardBaseRobux}`;
+      document.getElementById('billboardGBP').innerText = `£${finalGbp}`;
+      document.getElementById('billboardPayLink').href = buildOnramperUrl(finalGbp);
+    }
+
     function updateModDisplay() {
       const rawGbp = currentModBaseRobux * ROBUX_TO_GBP_RATE;
       const finalGbp = Math.max(0, rawGbp - currentModDiscountGbp).toFixed(2);
@@ -781,8 +897,17 @@
 
     // Code Redemption
     async function applyPromoCode(type) {
-      const inputId = type === 'standard' ? 'promoInput' : 'modPromoInput';
-      const msgId = type === 'standard' ? 'promoMsg' : 'modPromoMsg';
+      let inputId = 'promoInput';
+      let msgId = 'promoMsg';
+
+      if (type === 'mod') {
+        inputId = 'modPromoInput';
+        msgId = 'modPromoMsg';
+      } else if (type === 'billboard') {
+        inputId = 'billboardPromoInput';
+        msgId = 'billboardPromoMsg';
+      }
+
       const code = document.getElementById(inputId).value.trim();
       const msgElem = document.getElementById(msgId);
 
@@ -819,7 +944,7 @@
             document.getElementById('modalDiscount').innerText = `-£${currentDiscountGbp.toFixed(2)}`;
             document.getElementById('discountRow').style.display = 'flex';
             updateCheckoutTotal();
-          } else {
+          } else if (type === 'mod') {
             const baseGbp = currentModBaseRobux * ROBUX_TO_GBP_RATE;
             if (rewardType === 'discount_percent') {
               currentModDiscountGbp = baseGbp * (rewardValue / 100);
@@ -829,6 +954,16 @@
             document.getElementById('modDiscount').innerText = `-£${currentModDiscountGbp.toFixed(2)}`;
             document.getElementById('modDiscountRow').style.display = 'flex';
             updateModDisplay();
+          } else if (type === 'billboard') {
+            const baseGbp = currentBillboardBaseRobux * ROBUX_TO_GBP_RATE;
+            if (rewardType === 'discount_percent') {
+              currentBillboardDiscountGbp = baseGbp * (rewardValue / 100);
+            } else if (rewardType === 'discount_robux') {
+              currentBillboardDiscountGbp = rewardValue * ROBUX_TO_GBP_RATE;
+            }
+            document.getElementById('billboardDiscount').innerText = `-£${currentBillboardDiscountGbp.toFixed(2)}`;
+            document.getElementById('billboardDiscountRow').style.display = 'flex';
+            calculateBillboardTotal();
           }
         }
       } catch (err) {
@@ -906,12 +1041,16 @@
       document.getElementById('discordUserStatus').style.display = 'inline-flex';
       document.getElementById('discordUsername').innerText = user.username;
 
+      const vipOptions = document.querySelectorAll('.vip-option');
+
       if (user.isVip) {
         document.getElementById('vipBadge').style.display = 'inline-block';
         document.getElementById('vipBundleCard').style.display = 'flex';
+        vipOptions.forEach(opt => opt.style.display = 'block');
       } else {
         document.getElementById('vipBadge').style.display = 'none';
         document.getElementById('vipBundleCard').style.display = 'none';
+        vipOptions.forEach(opt => opt.style.display = 'none');
       }
 
       if (user.userId === SPENCER_ID) {
@@ -929,6 +1068,9 @@
       document.getElementById('vipBadge').style.display = 'none';
       document.getElementById('vipBundleCard').style.display = 'none';
       document.getElementById('adminPanelBtn').style.display = 'none';
+      
+      const vipOptions = document.querySelectorAll('.vip-option');
+      vipOptions.forEach(opt => opt.style.display = 'none');
     }
 
     function loginWithDiscord() {
