@@ -459,7 +459,8 @@
 
       <div class="user-status" id="discordUserStatus">
         <span>Logged in as <strong id="discordUsername"></strong></span>
-        <span class="status-badge" id="vipBadge">VIP Verified</span>
+        <!-- Hide by default -->
+        <span class="status-badge" id="vipBadge" style="display: none;">VIP Verified</span>
       </div>
 
       <button class="btn-admin" id="adminPanelBtn" onclick="openAdminModal()">⚙️ Code Manager</button>
@@ -909,9 +910,10 @@
             document.getElementById('discordLoginBtn').style.display = 'none';
             document.getElementById('discordUserStatus').style.display = 'inline-flex';
             document.getElementById('discordUsername').innerText = data.username;
-
+          
             if (data.isVip) {
-              document.getElementById('vipBundleCard').style.display = 'flex';
+              document.getElementById('vipBadge').style.display = 'inline-block'; // Show badge
+              document.getElementById('vipBundleCard').style.display = 'flex';     // Show bundle
             }
 
             if (data.userId === SPENCER_ID) {
