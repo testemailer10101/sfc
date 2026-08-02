@@ -82,28 +82,6 @@
       color: var(--text-muted);
     }
 
-    .currency-bar {
-      margin-top: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .currency-select-header {
-      background: rgba(0, 0, 0, 0.4);
-      color: var(--text-main);
-      border: 1px solid var(--card-border);
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 0.85rem;
-      outline: none;
-      cursor: pointer;
-    }
-
     .auth-container {
       margin-top: 16px;
       display: flex;
@@ -151,6 +129,14 @@
       border-radius: 12px;
       font-size: 0.88rem;
       color: var(--text-main);
+    }
+
+    .wallet-input-container {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      max-width: 480px;
+      margin-top: 12px;
     }
 
     .status-badge {
@@ -547,6 +533,25 @@
       cursor: pointer;
     }
 
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      border: 1px solid var(--card-border);
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
     footer {
       margin-top: 40px;
       text-align: center;
@@ -564,16 +569,6 @@
     <h1>SFC™ Services</h1>
     <p class="subtitle">Select a Service or Bundle to proceed with your purchase</p>
 
-    <div class="currency-bar">
-      <span>Display Currency:</span>
-      <select id="currencySelect" class="currency-select-header" onchange="handleCurrencySelect(this.value)">
-        <option value="USD">USD ($)</option>
-        <option value="GBP">GBP (£)</option>
-        <option value="EUR">EUR (€)</option>
-        <option value="CAD">CAD ($)</option>
-      </select>
-    </div>
-
     <div class="auth-container">
       <button class="btn-discord" id="discordLoginBtn" onclick="loginWithDiscord()">
         <svg viewBox="0 0 127.14 96.36"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0,-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a74.57,74.57,0,0,0,64.3,0c.87.68,1.76,1.36,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-18.88-72.15ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,45.92,53.87,53,48.81,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,45.92,96.1,53,91.05,65.69,84.69,65.69Z"/></svg>
@@ -587,6 +582,10 @@
       </div>
 
       <button class="btn-admin" id="adminPanelBtn" onclick="openAdminModal()">⚙️ Code Manager</button>
+    </div>
+
+    <div class="wallet-input-container" id="walletContainer" style="display: none; margin: 12px auto 0;">
+      <input type="text" id="solanaWalletInput" class="input-field" placeholder="Enter your Solana Wallet Address (Required)" oninput="saveWalletAddress()" />
     </div>
   </header>
 
@@ -691,7 +690,7 @@
             <span id="modalDiscount">-$0.00</span>
           </div>
           <div class="price-row total">
-            <span>Total (<span class="currency-label">USD</span>):</span>
+            <span>Total (USD):</span>
             <span id="modalDisplayTotal">$0.00</span>
           </div>
         </div>
@@ -726,13 +725,13 @@
             <span id="step2Discount">-$0.00</span>
           </div>
           <div class="price-row total">
-            <span>Total (<span class="currency-label">USD</span>):</span>
+            <span>Total (USD):</span>
             <span id="step2DisplayTotal">$0.00</span>
           </div>
         </div>
 
         <div class="pay-btn-container">
-          <a id="payLink" href="#" target="_blank" class="pay-btn">Checkout</a>
+          <button class="pay-btn" onclick="startPaymentProcess('standard')">Checkout</button>
         </div>
       </div>
 
@@ -781,7 +780,7 @@
           <span id="modDiscount">-$0.00</span>
         </div>
         <div class="price-row total">
-          <span>Total (<span class="currency-label">USD</span>):</span>
+          <span>Total (USD):</span>
           <span id="modDisplayTotal">$0.00</span>
         </div>
       </div>
@@ -791,9 +790,7 @@
           Buy full Bundle (<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:18px;height:18px;" /> 110)
         </button>
         <div class="pay-btn-container">
-          <a id="modPayLink" href="#" target="_blank" rel="noopener noreferrer" class="pay-btn">
-            Checkout
-          </a>
+          <button class="pay-btn" onclick="startPaymentProcess('mod')">Checkout</button>
         </div>
       </div>
     </div>
@@ -841,13 +838,48 @@
           <span id="billboardDiscount">-$0.00</span>
         </div>
         <div class="price-row total">
-          <span>Total (<span class="currency-label">USD</span>):</span>
+          <span>Total (USD):</span>
           <span id="billboardDisplayTotal">$0.15</span>
         </div>
       </div>
 
       <div class="pay-btn-container">
-        <a id="billboardPayLink" href="#" target="_blank" class="pay-btn">Checkout</a>
+        <button class="pay-btn" onclick="startPaymentProcess('billboard')">Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Guide & Solscan Verification Modal -->
+  <div class="modal-overlay" id="paymentGuideModal">
+    <div class="modal-content" style="max-width: 520px;">
+      <button class="close-btn" onclick="closeModals()">&times;</button>
+      <h2>How to Pay via USDC (Solana)</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">Follow the steps in the guide video to send your payment.</p>
+
+      <!-- Video Embed -->
+      <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/YOUR_YOUTUBE_VIDEO_ID" title="Payment Guide" allowfullscreen></iframe>
+      </div>
+
+      <div class="price-breakdown">
+        <div class="price-row">
+          <span>Amount to Send:</span>
+          <strong style="color: var(--gold);"><span id="payGuideUsdAmount">$0.00</span> USDC</strong>
+        </div>
+        <div class="price-row">
+          <span>Recipient Address:</span>
+          <span style="font-size: 0.75rem; word-break: break-all;" id="payGuideWallet">XEpoMmBFTLzujJuzZ9XmgM5NCgBou2F5N1prosvuuRU</span>
+        </div>
+        <div class="price-row">
+          <span>Sending From:</span>
+          <span style="font-size: 0.75rem; word-break: break-all;" id="payGuideSenderWallet">-</span>
+        </div>
+      </div>
+
+      <div class="promo-message" id="paymentVerifyMsg"></div>
+
+      <div class="pay-btn-container">
+        <button class="pay-btn" id="btnIHavePaid" onclick="confirmPaymentOnChain()">I have paid</button>
       </div>
     </div>
   </div>
@@ -894,7 +926,7 @@
   </div>
 
   <footer>
-    <p>&copy; SFC™ Services. Powered by Onramper & Solana.</p>
+    <p>&copy; SFC™ Services. Verified on Solana via Solscan.</p>
   </footer>
 
   <script>
@@ -915,75 +947,27 @@
     let currentBillboardDiscountUsd = 0;
     let loggedInUserId = null;
     let userCommissionTickets = [];
-
-    let activeCurrency = 'USD';
-    let exchangeRates = { USD: 1.0, GBP: 0.78, EUR: 0.92, CAD: 1.36 };
-    const currencySymbols = { USD: '$', GBP: '£', EUR: '€', CAD: 'CA$' };
-
-    async function fetchLiveRates() {
-      try {
-        const res = await fetch('https://open.er-api.com/v6/latest/USD');
-        if (res.ok) {
-          const data = await res.json();
-          exchangeRates.GBP = data.rates.GBP || exchangeRates.GBP;
-          exchangeRates.EUR = data.rates.EUR || exchangeRates.EUR;
-          exchangeRates.CAD = data.rates.CAD || exchangeRates.CAD;
-        }
-      } catch (err) {
-        console.warn('Using default exchange rate fallbacks:', err);
-      }
-    }
-
-    async function autoDetectCurrency() {
-      try {
-        const res = await fetch('https://ipapi.co/json/');
-        if (res.ok) {
-          const data = await res.json();
-          if (exchangeRates[data.currency]) {
-            activeCurrency = data.currency;
-            document.getElementById('currencySelect').value = activeCurrency;
-          }
-        }
-      } catch (err) {}
-      refreshAllModalDisplays();
-    }
-
-    function handleCurrencySelect(newCurrency) {
-      activeCurrency = newCurrency;
-      refreshAllModalDisplays();
-    }
-
-    function refreshAllModalDisplays() {
-      document.querySelectorAll('.currency-label').forEach(el => el.innerText = activeCurrency);
-      updateCheckoutTotal();
-      updateModDisplay();
-      calculateBillboardTotal();
-    }
+    let activeCheckoutUsd = 0;
 
     function formatCurrency(usdValue) {
-      const rate = exchangeRates[activeCurrency] || 1.0;
-      const symbol = currencySymbols[activeCurrency] || '$';
-      const converted = (usdValue * rate).toFixed(2);
-      return `${symbol}${converted}`;
+      return `$${usdValue.toFixed(2)}`;
+    }
+
+    function saveWalletAddress() {
+      const addr = document.getElementById('solanaWalletInput').value.trim();
+      localStorage.setItem('sfc_solana_wallet', addr);
+    }
+
+    function getWalletAddress() {
+      return document.getElementById('solanaWalletInput').value.trim();
     }
 
     function closeModals() {
       document.getElementById('standardModal').classList.remove('active');
       document.getElementById('serverModModal').classList.remove('active');
       document.getElementById('billboardModal').classList.remove('active');
+      document.getElementById('paymentGuideModal').classList.remove('active');
       document.getElementById('adminModal').classList.remove('active');
-    }
-
-    function buildOnramperUrl(fiatAmountUsd) {
-      const params = new URLSearchParams({
-        skipTransactionScreen: 'false',
-        defaultAmount: fiatAmountUsd,
-        defaultFiat: 'usd',
-        defaultCrypto: 'sol',
-        onlyCryptoNetworks: 'solana',
-        networkWallets: `solana:${WALLET_ADDRESS}`
-      });
-      return `https://buy.onramper.com/?${params.toString()}`;
     }
 
     async function fetchUserCommissionTickets() {
@@ -1111,32 +1095,30 @@
       const weeks = parseInt(document.getElementById('billboardWeeksSelect').value, 10);
       currentBillboardBaseRobux = weeks * 10;
       const rawUsd = currentBillboardBaseRobux * ROBUX_TO_USD_RATE;
-      const finalUsd = Math.max(0, rawUsd - currentBillboardDiscountUsd).toFixed(2);
+      const finalUsd = Math.max(0, rawUsd - currentBillboardDiscountUsd);
 
       document.getElementById('billboardRobux').innerHTML = `<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> ${currentBillboardBaseRobux}`;
-      document.getElementById('billboardDisplayTotal').innerText = formatCurrency(parseFloat(finalUsd));
-      document.getElementById('billboardPayLink').href = buildOnramperUrl(finalUsd);
+      document.getElementById('billboardDisplayTotal').innerText = formatCurrency(finalUsd);
     }
 
     function updateModDisplay() {
       const rawUsd = currentModBaseRobux * ROBUX_TO_USD_RATE;
-      const finalUsd = Math.max(0, rawUsd - currentModDiscountUsd).toFixed(2);
+      const finalUsd = Math.max(0, rawUsd - currentModDiscountUsd);
       document.getElementById('modRobux').innerHTML = `<img src="Robux_Icon.webp" alt="Robux" class="robux-inline-icon" style="width:16px;height:16px;" /> ${currentModBaseRobux}`;
-      document.getElementById('modDisplayTotal').innerText = formatCurrency(parseFloat(finalUsd));
-      document.getElementById('modPayLink').href = buildOnramperUrl(finalUsd);
+      document.getElementById('modDisplayTotal').innerText = formatCurrency(finalUsd);
     }
 
     function updateCheckoutTotal() {
       const rawUsd = currentBaseRobux * ROBUX_TO_USD_RATE;
-      const finalUsd = Math.max(0, rawUsd - currentDiscountUsd).toFixed(2);
+      const finalUsd = Math.max(0, rawUsd - currentDiscountUsd);
       
       // Step 1 displays
       document.getElementById('modalRobux').innerHTML = `<img src="Robux_Icon.webp" class="robux-inline-icon" style="width:16px;height:16px;" /> ${currentBaseRobux}`;
-      document.getElementById('modalDisplayTotal').innerText = formatCurrency(parseFloat(finalUsd));
+      document.getElementById('modalDisplayTotal').innerText = formatCurrency(finalUsd);
       
       // Step 2 displays
       document.getElementById('step2Robux').innerHTML = `<img src="Robux_Icon.webp" class="robux-inline-icon" style="width:16px;height:16px;" /> ${currentBaseRobux}`;
-      document.getElementById('step2DisplayTotal').innerText = formatCurrency(parseFloat(finalUsd));
+      document.getElementById('step2DisplayTotal').innerText = formatCurrency(finalUsd);
       
       if (currentDiscountUsd > 0) {
         document.getElementById('step2Discount').innerText = `-${formatCurrency(currentDiscountUsd)}`;
@@ -1144,8 +1126,76 @@
       } else {
         document.getElementById('step2DiscountRow').style.display = 'none';
       }
+    }
 
-      document.getElementById('payLink').href = buildOnramperUrl(finalUsd);
+    function startPaymentProcess(type) {
+      if (!loggedInUserId) {
+        alert("Please connect your Discord account before checking out.");
+        return;
+      }
+      const userWallet = getWalletAddress();
+      if (!userWallet) {
+        alert("Please enter your Solana wallet address in the input header before checking out.");
+        return;
+      }
+
+      if (type === 'standard') {
+        const rawUsd = currentBaseRobux * ROBUX_TO_USD_RATE;
+        activeCheckoutUsd = Math.max(0, rawUsd - currentDiscountUsd);
+      } else if (type === 'mod') {
+        const rawUsd = currentModBaseRobux * ROBUX_TO_USD_RATE;
+        activeCheckoutUsd = Math.max(0, rawUsd - currentModDiscountUsd);
+      } else if (type === 'billboard') {
+        const rawUsd = currentBillboardBaseRobux * ROBUX_TO_USD_RATE;
+        activeCheckoutUsd = Math.max(0, rawUsd - currentBillboardDiscountUsd);
+      }
+
+      document.getElementById('payGuideUsdAmount').innerText = formatCurrency(activeCheckoutUsd);
+      document.getElementById('payGuideSenderWallet').innerText = userWallet;
+      document.getElementById('paymentVerifyMsg').innerText = '';
+      document.getElementById('paymentVerifyMsg').className = 'promo-message';
+
+      closeModals();
+      document.getElementById('paymentGuideModal').classList.add('active');
+    }
+
+    async function confirmPaymentOnChain() {
+      const btn = document.getElementById('btnIHavePaid');
+      const msgElem = document.getElementById('paymentVerifyMsg');
+      const senderWallet = getWalletAddress();
+
+      btn.disabled = true;
+      btn.innerText = "Verifying on Solscan...";
+      msgElem.innerText = "";
+
+      try {
+        const res = await fetch(`${VERCEL_BACKEND}/api/verify-payment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: loggedInUserId,
+            senderWallet: senderWallet,
+            expectedAmountUsd: activeCheckoutUsd
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          msgElem.className = 'promo-message success';
+          msgElem.innerText = data.message || "Payment verified successfully!";
+          btn.innerText = "Paid & Verified ✓";
+        } else {
+          msgElem.className = 'promo-message error';
+          msgElem.innerText = data.message || "Could not find transaction. Please try again in a few seconds.";
+          btn.disabled = false;
+          btn.innerText = "I have paid";
+        }
+      } catch (err) {
+        msgElem.className = 'promo-message error';
+        msgElem.innerText = "Error verifying payment on network.";
+        btn.disabled = false;
+        btn.innerText = "I have paid";
+      }
     }
 
     async function applyPromoCode(type) {
@@ -1260,6 +1310,12 @@
       document.getElementById('discordLoginBtn').style.display = 'none';
       document.getElementById('discordUserStatus').style.display = 'inline-flex';
       document.getElementById('discordUsername').innerText = user.username;
+      document.getElementById('walletContainer').style.display = 'flex';
+
+      const savedWallet = localStorage.getItem('sfc_solana_wallet');
+      if (savedWallet) {
+        document.getElementById('solanaWalletInput').value = savedWallet;
+      }
 
       const vipOptions = document.querySelectorAll('.vip-option');
       if (user.isVip) {
@@ -1285,6 +1341,7 @@
       userCommissionTickets = [];
       document.getElementById('discordLoginBtn').style.display = 'inline-flex';
       document.getElementById('discordUserStatus').style.display = 'none';
+      document.getElementById('walletContainer').style.display = 'none';
       document.getElementById('vipBadge').style.display = 'none';
       document.getElementById('vipBundleCard').style.display = 'none';
       document.getElementById('adminPanelBtn').style.display = 'none';
@@ -1297,9 +1354,6 @@
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
-      await fetchLiveRates();
-      await autoDetectCurrency();
-
       const savedSession = localStorage.getItem('sfc_user_session');
       if (savedSession) {
         try {
