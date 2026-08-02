@@ -973,7 +973,7 @@
     async function fetchUserCommissionTickets() {
       if (!loggedInUserId) return [];
       try {
-        const res = await fetch(`${VERCEL_BACKEND}/api/user-tickets?userId=${encodeURIComponent(loggedInUserId)}`);
+        const res = await fetch(`${VERCEL_BACKEND}/api/tickets?userId=${encodeURIComponent(loggedInUserId)}`);
         if (res.ok) {
           const data = await res.json();
           if (data.success && Array.isArray(data.tickets)) {
@@ -1165,7 +1165,7 @@
       const senderWallet = getWalletAddress();
 
       btn.disabled = true;
-      btn.innerText = "Verifying on Solscan...";
+      btn.innerText = "Verifying on Solana Network...";
       msgElem.innerText = "";
 
       try {
